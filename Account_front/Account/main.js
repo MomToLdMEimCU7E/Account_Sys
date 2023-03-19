@@ -3,6 +3,14 @@
 import Vue from 'vue'
 import App from './App'
 
+//引入tmVuetify
+import tmVuetify from "./tm-vuetify";
+Vue.use(tmVuetify)
+
+//引入moment
+import moment from 'moment';
+Vue.prototype.$moment = moment;
+
 Vue.config.productionTip = false
 
 App.mpType = 'app'

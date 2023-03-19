@@ -1,41 +1,55 @@
 {
-	"pages": [
-		// 	{
-		// 	"path": "pages/index/index",
-		// 	"style": {
-		// 		"navigationBarTitleText": "uni-app"
-		// 	}
-		// }, 
-		{
-			"path": "pages/home/home",
-			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
-			}
-
-		}, {
-			"path": "pages/user/user",
-			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
-			}
-
-		}, {
-			"path": "pages/bill/bill",
-			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
-			}
-
-		}, {
-			"path": "pages/record/record",
-			"style": {
-				"navigationBarTitleText": "",
-				"enablePullDownRefresh": false
-			}
-
+	"easycom": {
+		"^tm-(.*)": "@/tm-vuetify/components/tm-$1/tm-$1.vue"
+		// "^bx-(.*)":"@/components/bx-$1.vue"
+	},
+	"pages": [{
+		"path": "pages/home/home",
+		"style": {
+			"navigationBarTitleText": "",
+			"enablePullDownRefresh": false
 		}
-	],
+
+	}, {
+		"path": "pages/user/user",
+		"style": {
+			"navigationBarTitleText": "",
+			"enablePullDownRefresh": false
+		}
+
+	}, {
+		"path": "pages/bill/bill",
+		"style": {
+			"navigationBarTitleText": "",
+			"enablePullDownRefresh": false
+		}
+
+	}, {
+		"path": "pages/record/record",
+		"style": {
+			"navigationBarTitleText": "",
+			"enablePullDownRefresh": false
+		}
+
+	}    ,{
+            "path" : "pages/count/count",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/pet/pet",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
@@ -46,19 +60,31 @@
 		}
 	},
 	"tabBar": {
+		// "color": "#ccc",
+		// "selectedColor": "red",
 		"list": [{
 				"pagePath": "pages/home/home",
 				"text": "首页"
-
+			},
+			{
+				"pagePath": "pages/bill/bill",
+				"text": "账单",
+				"iconPath": "static/icon_a660xqpf7bk/zhangdan.png"
+			},
+			// {
+			// 	"pagePath": "pages/record/record",
+			// 	"text": "记一笔"
+			// 	// "iconPath": "static/icon_a660xqpf7bk/zengjiatianjiajiahao.png"
+			// },
+			{
+				"pagePath": "pages/count/count",
+				"text": "统计"
+				// "iconPath": "static/icon_a660xqpf7bk/tongji.png"
 			},
 			{
 				"pagePath": "pages/user/user",
 				"text": "我的"
-
-			},
-			{
-				"pagePath": "pages/bill/bill",
-				"text": "账单"
+				// "iconPath": "static/icon_a660xqpf7bk/jurassic_user.png"
 			}
 		]
 	}

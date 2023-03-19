@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "element-ui": "^2.15.13"
+    "echarts": "^5.4.1",
+    "moment": "^2.29.4"
   }
 }

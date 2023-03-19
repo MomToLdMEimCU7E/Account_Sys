@@ -28,9 +28,9 @@ public class UserController {
      * 功能：用户登录
      */
     @RequestMapping(method = RequestMethod.POST,value ="/login")
-    public String login(String userName,String wxId){
+    public User login(String userName,String wxId){
         User user=new User(userName,wxId);
-        userService.login(user);
-        return "success";
+        User userInDb=userService.login(user);
+        return userInDb;
     }
 }

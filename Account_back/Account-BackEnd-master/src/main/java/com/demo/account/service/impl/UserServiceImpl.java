@@ -10,7 +10,6 @@ import org.springframework.util.ObjectUtils;
 import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
 
 @Service
 @Transactional
@@ -20,13 +19,14 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public String login(User user) {
+    public User login(User user) {
         User userInDb=userMapper.findUserByWxId(user.getWxId());
         if (ObjectUtils.isEmpty(userInDb)) {
             Date date = new Date();
             Timestamp timeStamp = new Timestamp(date.getTime());
             userMapper.addUser(userMapper.uidGenerate()+1,user.getUserName(),user.getWxId(),timeStamp);
+            userInDb=userMapper.findUserByWxId(user.getWxId());
         }
-        return "success";
+        return userInDb;
     }
 }
