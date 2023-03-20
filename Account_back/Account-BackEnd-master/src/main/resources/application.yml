@@ -1,11 +1,17 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    password: 123456
+    password: 675665
     username: root
-    url: jdbc:mysql://localhost:3306/account?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false
+    url: jdbc:mysql://localhost:3306/account_dbs?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+    #用来调整springboot版本更新导致的swagger2报错
 server:
   port: 9090
+  jackson:
+    time-zone: GMT+8
 
 mybatis:
   configuration:
