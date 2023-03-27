@@ -2,6 +2,7 @@ package com.demo.account.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.demo.account.Vo.AccountListVo;
+import com.demo.account.Vo.AssetsAndDebtsVo;
 import com.demo.account.Vo.BalanceVo;
 import com.demo.account.common.Result;
 import com.demo.account.entity.Account;
@@ -87,8 +88,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result<?> GetAssetsAndDebts(Integer accountId) {
-        return null;
+    public Result<?> GetAssetsAndDebts(Integer uid) {
+        Integer assets = accountDetailsMapper.getAssets(uid);
+        Integer debts = accountDetailsMapper.getDebts(uid);
+        Integer netAssets = assets - debts;
+
+        AssetsAndDebtsVo assetsAndDebtsVo = new AssetsAndDebtsVo();
+        assetsAndDebtsVo.setAssets(assets);
+        assetsAndDebtsVo.setDebts(debts);
+        assetsAndDebtsVo.setNetAssets(netAssets);
+
+        return Result.success(assetsAndDebtsVo);
     }
 
 

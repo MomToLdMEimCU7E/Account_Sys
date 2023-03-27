@@ -14,6 +14,6 @@ public interface AccountService {
     Result<?> DeleteAccountDetail(Integer accountDetailId);
     Result<?> GetAccountList(Integer uid);
     Result<?> GenerateRecords(Integer accountId);
-    Result<?> GetAssetsAndDebts(Integer accountId);
+    Result<?> GetAssetsAndDebts(Integer uid);
 
 }

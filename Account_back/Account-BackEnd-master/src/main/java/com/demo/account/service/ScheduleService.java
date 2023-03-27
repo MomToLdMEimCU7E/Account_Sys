@@ -7,4 +7,6 @@ import java.util.Date;
 
 public interface ScheduleService {
     Result<?> AddSchedule(Schedule schedule);
+    Result<?> UpdateSchedule(Schedule schedule, Integer scheduleId);
+    Result<?> DeleteSchedule(Integer scheduleId);
 }

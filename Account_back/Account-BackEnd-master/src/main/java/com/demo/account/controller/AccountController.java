@@ -81,4 +81,11 @@ public class AccountController {
 
         return Result.success(accountService.GetAccountList(uid));
     }
+
+    @GetMapping("/getAssetsAndDebt")
+    @ApiOperation("获取资产和负债")
+    @ResponseBody
+    public Result<?> getAssetsAndDebt(@RequestParam Integer uid){
+        return Result.success(accountService.GetAssetsAndDebts(uid));
+    }
 }

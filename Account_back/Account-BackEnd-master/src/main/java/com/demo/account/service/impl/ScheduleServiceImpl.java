@@ -1,5 +1,6 @@
 package com.demo.account.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.demo.account.common.Result;
 import com.demo.account.entity.Schedule;
 import com.demo.account.mapper.ScheduleMapper;
@@ -19,5 +20,18 @@ public class ScheduleServiceImpl implements ScheduleService {
     public Result<?> AddSchedule(Schedule schedule) {
         scheduleMapper.insert(schedule);
         return Result.success();
+    }
+
+    @Override
+    public Result<?> UpdateSchedule(Schedule schedule, Integer scheduleId) {
+        scheduleMapper.update(schedule, Wrappers.<Schedule>lambdaQuery().eq(Schedule::getScheduleId, scheduleId));
+        return Result.success();
+    }
+
+    @Override
+    public Result<?> DeleteSchedule(Integer scheduleId) {
+        scheduleMapper.deleteById(scheduleId);
+        return Result.success();
+
     }
 }
