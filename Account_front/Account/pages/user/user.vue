@@ -7,7 +7,7 @@
 					<image src="/static//user.jpg" style="height: 60px;width: 60px;"></image>
 				</view>
 				<view class="name">
-					<text>用户名</text>
+					<text>{{userName}}</text>
 				</view>
 			</view>
 		</view>
@@ -34,21 +34,20 @@
 
 		</view>
 		<view class="content-item">
-			<!-- <view class="title">
-				<text>我的订单</text>
-			</view> -->
 			<view class="content-show">
 				<view class="order-tab">
-					<uni-icons type="bars" size="30" color="#55aaff"></uni-icons>
+					<uni-icons type="calendar" size="30" color="#15D8AC"></uni-icons>
 					<text class="order-title">记账年报</text>
 				</view>
+				<navigator url="/subpkg/property/property">
+					<view class="order-tab">
+						<uni-icons type="wallet"  size="30" color="#15D8AC"></uni-icons>
+						<text class="order-title">资产管理</text>
+					</view>
+				</navigator>
+			
 				<view class="order-tab">
-					<uni-icons type="loop" size="30" color="#55aaff"></uni-icons>
-					<text class="order-title">资产管理</text>
-				</view>
-
-				<view class="order-tab">
-					<uni-icons type="reload" size="30" color="#55aaff"></uni-icons>
+					<uni-icons type="icon-yiliao" custom-prefix="iconfont" size="30" color="#15D8AC"></uni-icons>
 					<text class="order-title">健康管理</text>
 				</view>
 			</view>
@@ -58,20 +57,8 @@
 				<text>我的账本</text>
 			</view>
 			<view class="content-show">
-				<!-- <view class="service-item">
-					<uni-icons type="person" size="35" color="#55aaff"></uni-icons>
-					<text class="service-text">我的资料</text>
-				</view>
 				<view class="service-item">
-					<uni-icons type="location" size="35" color="#55aaff"></uni-icons>
-					<text class="service-text">收货地址</text>
-				</view>
-				<view class="service-item">
-					<uni-icons type="chat" size="35" color="#55aaff"></uni-icons>
-					<text class="service-text">帮助与客服</text>
-				</view> -->
-				<view class="service-item">
-					<uni-icons type="gear" size="35" color="#55aaff"></uni-icons>
+					<uni-icons type="gear" size="35" color="#15D8AC"></uni-icons>
 					<text class="service-text">设置</text>
 				</view>
 			</view>
@@ -95,7 +82,7 @@
 		},
 		data() {
 			return {
-
+				userName: '测试用户',
 			}
 		},
 		methods: {

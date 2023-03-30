@@ -8,7 +8,7 @@ public interface AccountService {
     Result<?> AddAccount(Account account);
     Result<?> UpdateAccount(Account account, Integer accountId);
     Result<?> DeleteAccount(Integer accountId);
-    Result<?> GetBalanceList(Integer accountId);
+    Result<?> GetBalanceList(Integer uid);
     Result<?> AddAccountDetail(AccountDetails accountDetails);
     Result<?> UpdateAccountDetail(AccountDetails accountDetails, Integer accountDetailId);
     Result<?> DeleteAccountDetail(Integer accountDetailId);

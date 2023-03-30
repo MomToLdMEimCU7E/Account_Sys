@@ -1,9 +1,9 @@
 <template>
 	<view>
 		<view class="pet" @click="gonavigate()">
-			<tm-images src="../../static/uni.png" :previmage="false"></tm-images>
+			<img src="../../static/pet/pet1.gif"><img>
 		</view>
-		<view class="fcard">
+		<!-- <view class="fcard">
 			<tm-card subTitle="lv.1">
 				<template v-slot:content="{ text }">
 					<tm-col :grid="6" justify="left">
@@ -29,7 +29,7 @@
 					</tm-col>
 				</template>
 			</tm-card>
-		</view>
+		</view> -->
 		<bxTabber></bxTabber>
 	</view>
 </template>
@@ -48,7 +48,7 @@
 		methods: {
 			gonavigate() {
 				uni.navigateTo({
-					url: '/pages/pet/pet'
+					url: '/subpkg/pet/pet'
 				})
 			}
 		}
@@ -61,10 +61,10 @@
 		// justify-content: center;
 		// align-items: center;
 		margin: 10% auto;
-		width: 450upx;
+		width: 100%;
 		height: 450upx;
-		border: 1upx solid black;
-		border-radius: 1000upx;
+		// border: 1upx solid black;
+		// border-radius: 1000upx;
 		overflow: hidden;
 	}
 	.rcard{

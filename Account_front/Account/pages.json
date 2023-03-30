@@ -31,25 +31,52 @@
 			"enablePullDownRefresh": false
 		}
 
-	}    ,{
-            "path" : "pages/count/count",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-        ,{
-            "path" : "pages/pet/pet",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-    ],
+	}, {
+		"path": "pages/count/count",
+		"style": {
+			"navigationBarTitleText": "",
+			"enablePullDownRefresh": false
+		}
+
+	},{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}
+	],
+	"subPackages": [{
+		"root": "subpkg",
+		"pages": [
+
+			{
+				"path": "pet/pet",
+				"style": {
+					"navigationBarTitleText": "",
+					"enablePullDownRefresh": false
+				}
+
+			},
+			{
+				"path": "property/property",
+				"style": {
+					"navigationBarTitleText": "资产管理",
+					"enablePullDownRefresh": false
+				}
+
+			},
+			{
+				"path": "addpro/addpro",
+				"style": {
+					"navigationBarTitleText": "资产管理",
+					"enablePullDownRefresh": false
+				}
+
+			}
+		]
+	}],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
@@ -68,14 +95,14 @@
 			},
 			{
 				"pagePath": "pages/bill/bill",
-				"text": "账单",
-				"iconPath": "static/icon_a660xqpf7bk/zhangdan.png"
+				"text": "账单"
+				// "iconPath": "static/icon_a660xqpf7bk/zhangdan.png"
 			},
-			// {
-			// 	"pagePath": "pages/record/record",
-			// 	"text": "记一笔"
-			// 	// "iconPath": "static/icon_a660xqpf7bk/zengjiatianjiajiahao.png"
-			// },
+			{
+				"pagePath": "pages/record/record",
+				"text": "记一笔"
+				// "iconPath": "static/icon_a660xqpf7bk/zengjiatianjiajiahao.png"
+			},
 			{
 				"pagePath": "pages/count/count",
 				"text": "统计"

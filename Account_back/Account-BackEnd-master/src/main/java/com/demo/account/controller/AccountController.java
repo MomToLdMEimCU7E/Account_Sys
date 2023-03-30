@@ -43,9 +43,9 @@ public class AccountController {
     @GetMapping("/getBalanceList")
     @ApiOperation("根据accountId获取账户余额列表")
     @ResponseBody
-    public Result<?> getBalanceList(@RequestParam Integer accountId)
+    public Result<?> getBalanceList(@RequestParam Integer uid)
     {
-        return Result.success(accountService.GetBalanceList(accountId));
+        return Result.success(accountService.GetBalanceList(uid));
     }
 
     @PostMapping("/addAccountDetail")

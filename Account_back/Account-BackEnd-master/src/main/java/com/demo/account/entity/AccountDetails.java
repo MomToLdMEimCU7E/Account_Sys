@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 public class AccountDetails {
     @TableId(type = IdType.AUTO)
     private Long accountDetailId;
-    private Integer accountDetailType;
+    private Integer accountDetailTypeId;
     private Integer accountId;
     private Integer uid;
     private String balance;
@@ -21,12 +21,12 @@ public class AccountDetails {
         this.accountDetailId = accountDetailId;
     }
 
-    public Integer getAccountDetailType() {
-        return accountDetailType;
+    public Integer getAccountDetailTypeId() {
+        return accountDetailTypeId;
     }
 
-    public void setAccountDetailType(Integer accountDetailType) {
-        this.accountDetailType = accountDetailType;
+    public void setAccountDetailTypeId(Integer accountDetailTypeId) {
+        this.accountDetailTypeId = accountDetailTypeId;
     }
 
     public Integer getAccountId() {

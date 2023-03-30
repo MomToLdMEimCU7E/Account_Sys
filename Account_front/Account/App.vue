@@ -24,13 +24,16 @@
 	// 设置整个项目的背景色
 	/* 引入iconfont图标 */
 	@import url("static/iconfont-weapp-icon.css");
+	@import "@/static/iconfont.css";
+	// tabbaricon引用
+	@import 'static/tabbar_icon.css';
 	/*样式设置*/
 	.t-icon{
 		width:30px;
 		height:30px;
 	}
 	page {
-		background-color: #f5f5f5;
+		background-color: #EEF8F8;
 	}
 
 	/* #endif */

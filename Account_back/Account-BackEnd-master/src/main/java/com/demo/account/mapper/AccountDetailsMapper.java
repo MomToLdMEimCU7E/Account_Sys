@@ -10,8 +10,8 @@ import java.util.List;
 
 @Transactional
 public interface AccountDetailsMapper extends BaseMapper<AccountDetails> {
-    @Select("select account_detail_id, balance from account_details where account_id = #{accountId}")
-    List<BalanceVo> getBalanceList(Integer accountId);
+    @Select("select account_detail_id, balance from account_details where uid = #{uid}")
+    List<BalanceVo> getBalanceList(Integer uid);
 
     @Select("select sum(balance) from account_details where account_detail_type_id in (1,2,3,4,7,8,9,10,11,13) and uid = #{uid}")
     Integer getAssets(Integer uid);

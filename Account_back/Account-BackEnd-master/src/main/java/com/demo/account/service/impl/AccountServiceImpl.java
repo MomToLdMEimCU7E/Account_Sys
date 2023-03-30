@@ -48,9 +48,9 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public Result<?> GetBalanceList(Integer accountId) {
+    public Result<?> GetBalanceList(Integer uid) {
         List<BalanceVo> balanceVoList;
-        balanceVoList = accountDetailsMapper.getBalanceList(accountId);
+        balanceVoList = accountDetailsMapper.getBalanceList(uid);
         balanceVoList.forEach(balanceVo -> {
             balanceVo.setAccountDetailName(accountTypeMapper.getTypeName(balanceVo.getAccountDetailId()));
         });
@@ -91,7 +91,19 @@ public class AccountServiceImpl implements AccountService {
     public Result<?> GetAssetsAndDebts(Integer uid) {
         Integer assets = accountDetailsMapper.getAssets(uid);
         Integer debts = accountDetailsMapper.getDebts(uid);
+
+        if (assets == null)
+        {
+            assets = 0;
+        }
+        if (debts == null)
+        {
+            debts = 0;
+        }
         Integer netAssets = assets - debts;
+
+
+
 
         AssetsAndDebtsVo assetsAndDebtsVo = new AssetsAndDebtsVo();
         assetsAndDebtsVo.setAssets(assets);
