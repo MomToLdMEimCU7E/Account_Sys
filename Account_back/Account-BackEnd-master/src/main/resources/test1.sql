@@ -4,11 +4,11 @@ INSERT INTO bookkeeping(bookkeeping_id,uid,bookkeeping_type_id,bookkeeping_cover
 INSERT INTO bookkeeping(bookkeeping_id,uid,bookkeeping_type_id,bookkeeping_cover,bookkeeping_name,bookkeeping_period,bookkeeping_create_date,bookkeeping_end_date,customed_funds_id,extra_member1,extra_member2) VALUES(2,1,3,"红包","我的账簿2","一个月",20021114093723,20031114093723,"CO1",2,3);
 INSERT INTO bookkeeping(bookkeeping_id,uid,bookkeeping_type_id,bookkeeping_cover,bookkeeping_name,bookkeeping_period,bookkeeping_create_date,bookkeeping_end_date,customed_funds_id,extra_member1,extra_member2) VALUES(3,1,2,"红包","我的账簿1","一个月",20021114093723,20031114093723,"CO1",2,3);
 
-INSERT INTO payment(payment_id,uid,bookkeeping_id,account_id,amount,time,fund_id,customed_fund_id,comment,enclosure)
-VALUES(1,1,1,1,"100元",20021114093723,"BO1",NULL,"无","无");
+INSERT INTO payment(payment_id,uid,bookkeeping_id,account_detail_id,amount,time,fund_id,customed_fund_id,comment,enclosure)
+VALUES(1,1,1,1,"100",20021114093723,"BO1",NULL,"无","无");
 
-INSERT INTO income(income_id,uid,bookkeeping_id,account_id,amount,time,fund_id,customed_fund_id,comment,enclosure)
-VALUES(1,1,1,1,"100元",20021114093723,"BI17",NULL,"无","无");
+INSERT INTO income(income_id,uid,bookkeeping_id,account_detail_id,amount,time,fund_id,customed_fund_id,comment,enclosure)
+VALUES(1,1,1,1,"100",20021114093723,"BI17",NULL,"无","无");
 
 #账本类型表
 INSERT INTO bookkeeping_tpye(bookkeeping_type_id,bookkeeping_type_name,bookkeeping_type_funds_id)
@@ -19,62 +19,62 @@ INSERT INTO bookkeeping_tpye(bookkeeping_type_id,bookkeeping_type_name,bookkeepi
 VALUES(3,"家庭账本","BO3-BO4-BO5-BO6-BO7-BI17-BI23-BI26-BI27");
 
 #款项类型表
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO1","餐饮");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO2","购物");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO3","日用");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO4","交通");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO5","蔬菜");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO6","水果");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO7","零食");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO8","运动");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO9","娱乐");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO10","通讯");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO11","服饰");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO12","快递");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO13","家庭");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO14","社交");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO15","旅行");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BO16","住房");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO1","餐饮","icon-canyin1");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO2","购物","icon-gouwu");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO3","日用","icon-daily-necessities");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO4","交通","icon-jiaotong");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO5","蔬菜","icon-shucai");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO6","水果","icon-test");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO7","零食","icon-snacks");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO8","运动","icon-yundong");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO9","娱乐","icon-yule");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO10","通讯","icon-weibiaoti-");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO11","服饰","icon-clothes");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO12","快递","icon-kuaidi");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO13","家庭","icon-jiatingguanxi");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO14","社交","icon-shejiao");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO15","旅行","icon-lvhang");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BO16","住房","icon-zhufang");
 #---------以上是支出款项类型-------
 #---------以下是收入款项类型-------
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BI17","工资");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BI18","红包");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BI19","礼金");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BI20","租金");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BI21","分红");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BI22","理财");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BI23","年终奖");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BI24","借入");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BI25","收款");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BI26","生活费");
-INSERT INTO basic_funds(fund_id,fund_name)
-VALUES("BI27","其它");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BI17","工资","icon-gongzi");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BI18","红包","icon-hongbao");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BI19","礼金","icon-lijin");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BI20","租金","icon-fangwuzujin");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BI21","分红","icon-bangong");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BI22","理财","icon-gupiao");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BI23","年终奖","icon-_xianjin");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BI24","借入","icon-jiekuan");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BI25","收款","icon-qiandai");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BI26","生活费","icon-xinyongka1");
+INSERT INTO basic_funds(fund_id,fund_name,icon)
+VALUES("BI27","其它","icon-shenglvehao");
 
 #用户自定义款项表
 INSERT INTO customed_funds(customed_fund_id,uid,customed_fund_name,bookkeeping_type_id)
@@ -113,3 +113,32 @@ SELECT bookkeeping_id FROM bookkeeping WHERE uid=1 AND bookkeeping_name='我的�
 SELECT MAX(bookkeeping_type_id) FROM bookkeeping_tpye;
 
 UPDATE bookkeeping SET bookkeeping_cover="天空",bookkeeping_period="2个月",bookkeeping_create_date=20021114093723,bookkeeping_end_date=20021114093723,extra_member1=NULL,extra_member2=2 WHERE uid=1 AND bookkeeping_name="我的账簿4";
+
+ALTER TABLE income change account_id account_detail_id int;
+ALTER TABLE payment change account_id  account_detail_id int;
+ALTER TABLE basic_funds ADD (icon varchar(255));
+
+
+CREATE TRIGGER accountBalanceAdd 
+AFTER INSERT ON income
+FOR EACH ROW
+BEGIN	
+			
+			UPDATE account_details
+			SET balance=balance+0+NEW.amount
+			WHERE account_detail_id=NEW.account_detail_id;
+END;
+
+CREATE TRIGGER accountBalanceDecrease 
+AFTER INSERT ON payment
+FOR EACH ROW
+BEGIN	
+			
+			UPDATE account_details
+			SET balance=balance+0-NEW.amount
+			WHERE account_detail_id=NEW.account_detail_id;
+END;
+#DROP TRIGGER accountBalanceAdd;
+#SELECT "123"+0-"20"
+
+SELECT *FROM account_details WHERE account_detail_id=1
