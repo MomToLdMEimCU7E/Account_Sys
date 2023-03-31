@@ -1,16 +1,12 @@
 <template>
 	<view>
-		记一笔
-		<!-- <bxTabber></bxTabber> -->
+		record
+		
 	</view>
 </template>
 
 <script>
-	import bxTabber from '@/components/bx-tabber.vue';
 	export default {
-		components: {
-			bxTabber
-		},
 		data() {
 			return {
 

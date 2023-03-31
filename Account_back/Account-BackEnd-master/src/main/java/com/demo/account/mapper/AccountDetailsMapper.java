@@ -18,4 +18,8 @@ public interface AccountDetailsMapper extends BaseMapper<AccountDetails> {
 
     @Select("select sum(balance) from account_details where account_detail_type_id in (5,6,12) and uid = #{uid}")
     Integer getDebts(Integer uid);
+
+    @Select("select account_detail_Type_id from account_details where account_detail_id = #{accountDetailId}")
+    Integer getDetailTypeId(Integer accountDetailId);
+
 }

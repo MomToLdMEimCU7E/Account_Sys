@@ -8,9 +8,11 @@ import com.demo.account.common.Result;
 import com.demo.account.entity.Account;
 import com.demo.account.entity.AccountDetails;
 import com.demo.account.mapper.AccountDetailsMapper;
+import com.demo.account.mapper.AccountDetailsTypeMapper;
 import com.demo.account.mapper.AccountMapper;
 import com.demo.account.mapper.AccountTypeMapper;
 import com.demo.account.service.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,7 +28,8 @@ public class AccountServiceImpl implements AccountService {
     AccountDetailsMapper accountDetailsMapper;
     @Resource
     AccountTypeMapper accountTypeMapper;
-
+    @Resource
+    AccountDetailsTypeMapper accountDetailsTypeMapper;
 
     @Override
     public Result<?> AddAccount(Account account) {
@@ -52,7 +55,7 @@ public class AccountServiceImpl implements AccountService {
         List<BalanceVo> balanceVoList;
         balanceVoList = accountDetailsMapper.getBalanceList(uid);
         balanceVoList.forEach(balanceVo -> {
-            balanceVo.setAccountDetailName(accountTypeMapper.getTypeName(balanceVo.getAccountDetailId()));
+            balanceVo.setAccountDetailName(accountDetailsTypeMapper.getTypeName(accountDetailsMapper.getDetailTypeId(balanceVo.getAccountDetailId())));
         });
         return Result.success(balanceVoList);
     }

@@ -62,10 +62,13 @@
         "appid" : "wx4290c24238ea8614",
         "setting" : {
             "urlCheck" : true,
-            "checkSiteMap" : false
+            "checkSiteMap" : false,
+            "minified" : true
         },
         "usingComponents" : true,
-		"optimization":{"subPackages":true}
+        "optimization" : {
+            "subPackages" : true
+        }
     },
     "vueVersion" : "2"
 }

@@ -1,10 +1,9 @@
 <template>
 	<view>
 		<view class="content-item">
-			<image src="/static/my-banner.jpg" style="width: 100%;"></image>
 			<view class="user-info">
 				<view>
-					<image src="/static//user.jpg" style="height: 60px;width: 60px;"></image>
+					<image src="/static/user.jpg" class="img" :mode="aspectFit"></image>
 				</view>
 				<view class="name">
 					<text>{{userName}}</text>
@@ -16,7 +15,7 @@
 			<view class="content-show">
 				<view class="money-item">
 					<text>
-						111
+						{{accountDay}}
 					</text>
 					<text style="font-size: 12px;color: #919293;">
 						记账天数
@@ -24,7 +23,7 @@
 				</view>
 				<view class="money-item">
 					<text>
-						111
+						{{accountCount}}
 					</text>
 					<text style="font-size: 12px;color: #919293;">
 						记账笔数
@@ -82,6 +81,8 @@
 		},
 		data() {
 			return {
+				accountCount: '111',
+				accountDay: '111',
 				userName: '测试用户',
 			}
 		},
@@ -101,16 +102,25 @@
 	}
 
 	.user-info {
-		position: absolute;
+		/* position: absolute;
 		top: 100px;
-		left: 30px;
+		left: 30px; */
 		display: flex;
 		align-items: center;
-
+		background-color: #13D0A5;
+		height: 250upx;
+		justify-content: flex-start;
 	}
-
+	.user-info .img{
+		margin: 5% 10%;
+		width: 200upx;
+		height: 200upx;
+		border-radius: 50%;
+	}
 	.user-info .name {
-		display: flex;
+		margin-left: 5%;
+		font-size: 120%;
+		/* display: flex; */
 	}
 
 	.content-item {
