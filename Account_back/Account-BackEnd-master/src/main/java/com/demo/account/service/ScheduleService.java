@@ -9,4 +9,7 @@ public interface ScheduleService {
     Result<?> AddSchedule(Schedule schedule);
     Result<?> UpdateSchedule(Schedule schedule, Integer scheduleId);
     Result<?> DeleteSchedule(Integer scheduleId);
+    Result<?> GetSchedules(Integer uid);
+    Result<?> GetDaySchedules(Integer uid, String date);
+    Result<?> CheckTime(Integer uid, String date);
 }
