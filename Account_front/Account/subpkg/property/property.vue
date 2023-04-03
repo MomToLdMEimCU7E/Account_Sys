@@ -16,7 +16,7 @@
 					</uni-col>
 					<uni-col :span="8">
 						负债
-						<view style="font-weight:600;font-size: 180%;">{{debt}}</view>
+						<view style="font-weight:600;font-size: 180%;">{{debts}}</view>
 					</uni-col>
 				</uni-row>
 			</view>
@@ -55,7 +55,7 @@
 				uid: 1,
 				netAssets: '0',
 				assets: '0',
-				debt: '0',
+				debts: '0',
 				propertyList: [],
 				accountList: [],
 				imgList: [],
@@ -111,15 +111,15 @@
 				} = await uni.$http.get('/account/getAssetsAndDebt?uid=' + this.uid)
 				if (res.msg !== "成功") return uni.$showMsg()
 				this.assets = res.data.data.assets
-				this.debt = res.data.data.debt
+				this.debts = res.data.data.debts
 				this.netAssets = res.data.data.netAssets
-				// console.log(this.debt)
+				// console.log(this.debts)
 			},
 			getServerData() {
 				//模拟从服务器获取数据时的延时
 				setTimeout(() => {
 					let a = this.assets;
-					let b = this.debt;
+					let b = this.debts;
 					let res = {
 						categories: ["总资产", "负债"],
 						series: [{

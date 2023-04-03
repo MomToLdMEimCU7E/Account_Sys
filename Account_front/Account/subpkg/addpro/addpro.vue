@@ -88,10 +88,10 @@
 		<uni-popup ref="popup" background-color="#fff" type="bottom">
 			<view class="pop">
 				<uni-forms :modelValue="accountData" label-width="70px">
-					<uni-forms-item label="账户名称" name="accountDetailName">
+					<!-- <uni-forms-item label="账户名称" name="accountDetailName">
 						<uni-easyinput class="pop_in" type="text" v-model="accountData.accountDetailName"
 							placeholder="请输入账户名称" />
-					</uni-forms-item>
+					</uni-forms-item> -->
 					<uni-forms-item label="金额" name="balance">
 						<uni-easyinput class="pop_in" prefixIcon="search" type="text" v-model="accountData.balance"
 							placeholder="请输入金额" />
@@ -100,8 +100,8 @@
 						<uni-easyinput class="pop_in" type="text" v-model="accountData.comment" placeholder="请输入备注" />
 					</uni-forms-item>
 				</uni-forms>
-				<button @click="addpro()" type="primary">确认添加</button>
 			</view>
+			<button @click="addpro()" type="primary">确认添加</button>
 		</uni-popup>
 	</view>
 </template>
@@ -147,7 +147,7 @@
 			},
 			addpro3() {
 				this.$refs.popup.open("bottom");
-				this.accountData.accountDetailTypeId = 31;
+				this.accountData.accountDetailTypeId = 1;
 			},
 			addpro4() {
 				this.$refs.popup.open("bottom");
@@ -221,9 +221,12 @@
 
 	.pop {
 		padding: 20px;
+		display: flex;
+		justify-content: space-between;
+		/* align-items: center; */
 	}
 
 	.pop_in {
-		margin: 5%;
+		/* margin: 5%; */
 	}
 </style>

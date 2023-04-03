@@ -172,6 +172,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<String> bookkeepingTypeNamesFind(int uid, String bookKeepingName) {
         List<BookKeeping> ls=bookMapper.selectByUidAndName(uid,bookKeepingName);
+        System.out.println(ls);
         List<String> typeNames=new ArrayList<>();
         for (BookKeeping i: ls){
             typeNames.add(bookMapper.selectBookkeepingTypeName(i.getBookkeeping_type_id()));
