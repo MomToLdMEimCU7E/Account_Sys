@@ -29,7 +29,8 @@
 				资产账户
 			</view>
 			<view class="p_list" v-for="(item,index) in propertyList" :key="index">
-				<view class="p_card">
+				<!-- <navigator url="/subpkg/prodetail/prodetail?accountDetailId= + item.accountDetailId"> -->
+				<view class="p_card" @click="GoToprodetail(index)">
 					<img  class="c_img" src="../../static/icon_p6208913rbe/weixin.png" mode="widthFix">
 					<view class="c_name">
 						{{item.accountDetailName}}
@@ -38,6 +39,7 @@
 						￥{{item.balance}}
 					</view>
 				</view>
+				<!-- </navigator> -->
 			</view>
 			<navigator url="/subpkg/addpro/addpro">
 				<view class="navi">
@@ -98,13 +100,21 @@
 				},
 			}
 		},
-		onReady() {
+		onShow() {
 			this.getAssetsAndDebt();
 			this.getServerData();
 			// this.getAccountList();
 			this.getPropertList();
 		},
 		methods: {
+			GoToprodetail(index){
+				// let item = this.propertyList[index].accountDetailId;
+				// console.log(this.propertyList[index])
+				let item = encodeURIComponent(JSON.stringify(this.propertyList[index]))
+				uni.navigateTo({
+					url: '/subpkg/prodetail/prodetail?item=' + item
+				})
+			},
 			async getAssetsAndDebt() {
 				const {
 					data: res
@@ -185,12 +195,14 @@
 	
 	.p_view .p_card{
 		background-color: #56DFC0;
+		box-shadow: 0 3px 8px rgba(0,37,204, 0.2);
 		display: flex;
 		flex-flow: row;
 		justify-content: start;
 		align-items: center;
 		/* margin: 5% 0%; */
 		height: 180upx;
+		opacity: 0.9;
 		box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1);;
 	}
 	
@@ -215,10 +227,12 @@
 	}
 	.navi{
 		background-color: #56DFC0;
+		box-shadow: 0 3px 8px rgba(0,37,204, 0.2);
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		height: 100upx;
-		margin: 0% 5%
+		margin: 0% 5%;
+		opacity: 0.9;
 	}
 </style>

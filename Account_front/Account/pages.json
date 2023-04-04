@@ -20,21 +20,21 @@
 	}, {
 		"path": "pages/bill/bill",
 		"style": {
-			"navigationBarTitleText": "",
+			"navigationBarTitleText": "账单统计",
 			"enablePullDownRefresh": false
 		}
 
 	}, {
 		"path": "pages/record/record",
 		"style": {
-			"navigationBarTitleText": "",
+			"navigationBarTitleText": "记一笔",
 			"enablePullDownRefresh": false
 		}
 
 	}, {
 		"path": "pages/count/count",
 		"style": {
-			"navigationBarTitleText": "",
+			"navigationBarTitleText": "消费统计",
 			"enablePullDownRefresh": false
 		}
 
@@ -79,7 +79,16 @@
                     "path" : "bookman/bookman",
                     "style" :                                                                                    
                 {
-                    "navigationBarTitleText": "",
+                    "navigationBarTitleText": "账本管理",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
+                ,{
+                    "path" : "prodetail/prodetail",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "资产详情",
                     "enablePullDownRefresh": false
                 }
                 

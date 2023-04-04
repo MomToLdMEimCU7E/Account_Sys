@@ -139,14 +139,17 @@
 		display: flex;
 		align-items: center;
 		background-color: #13D0A5;
+		box-shadow: 0 3px 8px rgba(0,37,204, 0.2);
+		opacity: 0.8;
 		height: 250upx;
 		justify-content: flex-start;
 	}
 
 	.user-info .img {
+		box-shadow: 0 3px 8px rgba(0,37,204, 0.2);
 		margin: 5% 10%;
-		width: 200upx;
-		height: 200upx;
+		width: 180upx;
+		height: 180upx;
 		border-radius: 50%;
 	}
 
@@ -237,6 +240,7 @@
 	}
 
 	.b_list {
+		box-shadow: 0 3px 8px rgba(0,37,204, 0.2);
 		padding: 10px;
 		display: flex;
 		flex-flow: column;
