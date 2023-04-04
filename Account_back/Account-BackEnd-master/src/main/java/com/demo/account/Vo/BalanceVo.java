@@ -7,6 +7,15 @@ public class BalanceVo {
     public Integer accountDetailId;
     public String accountDetailName;
     public String balance;
+    public String icon;
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
 
     public Integer getAccountDetailId() {
         return accountDetailId;

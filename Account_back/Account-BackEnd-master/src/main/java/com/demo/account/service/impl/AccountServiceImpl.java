@@ -56,6 +56,7 @@ public class AccountServiceImpl implements AccountService {
         balanceVoList = accountDetailsMapper.getBalanceList(uid);
         balanceVoList.forEach(balanceVo -> {
             balanceVo.setAccountDetailName(accountDetailsTypeMapper.getTypeName(accountDetailsMapper.getDetailTypeId(balanceVo.getAccountDetailId())));
+            balanceVo.setIcon(accountDetailsTypeMapper.getIcon(accountDetailsMapper.getDetailTypeId(balanceVo.getAccountDetailId())));
         });
         return Result.success(balanceVoList);
     }

@@ -16,7 +16,27 @@ public class Schedule {
     private Date date;
 
     private Integer uid;
+    private String title;
+    private String position;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
+    }
+
     private String content;
+
 
     public Integer getScheduleId() {
         return scheduleId;
