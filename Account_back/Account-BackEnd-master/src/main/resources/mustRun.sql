@@ -6,7 +6,7 @@ ALTER TABLE bookkeeping DROP bookkeeping_end_date;
 CREATE TRIGGER budgetAdd
 AFTER INSERT ON bookkeeping
 FOR EACH ROW
-BEGIN
+BEGIN			
 			INSERT INTO budget(bookkeeping_id) VALUES(NEW.bookkeeping_id);
 END;
 
@@ -49,7 +49,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 INSERT INTO `bookkeeping` VALUES (7, 1, 5, '大海', '我的账簿5', NULL, 2, 3);
 INSERT INTO `bookkeeping` VALUES (8, 2, 6, '大海', '我的账簿1', NULL, 2, 3);
 
-INSERT INTO `bookkeeping_tpye` VALUES (5, '好好学习', 'BO3-BO4-BO5-BO6-BO8-BI17-BI23-BI26-BI26');
+INSERT INTO `bookkeeping_tpye` VALUES (5, '好好学习', 'BO3-BO4-BO5-BO6-BO8-BI17-BI23-BI26-BI27');
 INSERT INTO `bookkeeping_tpye` VALUES (6, '发财', 'BO3-BO4-BO5-BO6-BO8-BI17-BI23-BI26-BI27');
 
 UPDATE bookkeeping_tpye SET bookkeeping_type_funds_id='BO3-BO4-BO5-BO6-BO7-BI17-BI23-BI26-BI27' WHERE bookkeeping_type_id=3;
@@ -60,7 +60,7 @@ UPDATE bookkeeping_tpye SET bookkeeping_type_funds_id='BO3-BO4-BO5-BO6-BO7-BI17-
 CREATE TRIGGER deleteBookkeeping
 AFTER DELETE ON bookkeeping
 FOR EACH ROW
-BEGIN
+BEGIN			
 			DELETE FROM bookkeeping_tpye WHERE bookkeeping_type_id=old.bookkeeping_type_id;
 			DELETE FROM budget WHERE bookkeeping_id=old.bookkeeping_id;
 			DELETE FROM customed_funds WHERE uid=old.uid AND bookkeeping_type_id=old.bookkeeping_type_id;
@@ -68,3 +68,13 @@ END;
 
 UPDATE budget SET bookkeeping_id=7 WHERE budget_id=5;
 INSERT INTO `budget` VALUES (6, 8, '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');
+
+-- 以下为v1.9 删除自定义款项和接口优化 -------
+UPDATE bookkeeping_tpye SET bookkeeping_type_funds_id='BO3-BO4-BO5-BO6-BO8-BI17-BI23-BI26-BI27' WHERE bookkeeping_type_id=5 AND bookkeeping_type_name='好好学习';
+
+
+
+
+
+
+
