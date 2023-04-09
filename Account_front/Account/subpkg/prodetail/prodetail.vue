@@ -59,7 +59,7 @@
 						icon: 'none',
 					})
 				})
-				uni.navigateTo({
+				uni.reLaunch({
 					url: '/subpkg/property/property'
 				})
 			},

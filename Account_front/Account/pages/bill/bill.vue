@@ -132,7 +132,7 @@
 				]
 			}
 		},
-		onLoad() {
+		onShow() {
 			this.calucateProgress();
 		},
 		methods: {
