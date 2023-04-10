@@ -35,7 +35,7 @@
 			<view class="bill_title">
 				<text style="font-size: 150%;font-weight: bold;">收支记录</text>
 				<select-lay :value="selecValue" placeholder="筛选" name="name" :options="options" @selectitem="selectitem"
-					style="width: 80px;background-color: #D1FAF1;box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);"></select-lay>
+					style="width: 80px;background-color: #56DFC0;box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);font color: black;"></select-lay>
 			</view>
 			<view class="bill_list" v-for="(item,index) in payList" :key="index">
 				<view class="bill_card" @click="GoToprodetail(index)">
@@ -49,23 +49,29 @@
 				</view>
 			</view>
 		</scroll-view>
-		<uni-popup ref="popup">
+		<uni-popup ref="dateList">
 			<view class="list" v-for="(item,index) in scheduleList" :key="index">
-				<view class="title">
-					标题占位
+				<view class="scheduleShow">
+					<view class="title">
+						{{item.title}}
+					</view>
+					<view class="time">
+						<text style="font-size: 120%;font-weight: bold;margin-right: 5%;">时间</text>
+						{{dateFormat(item.date)}}
+					</view>
+					<view class="pos">
+						<text style="font-size: 120%;font-weight: bold;margin-right: 5%;">地点</text>
+						{{item.position}}
+					</view>
+					<view class="thing">
+						<text style="font-size: 120%;font-weight: bold;margin-right: 5%;">事件</text>
+						{{item.content}}
+					</view>
+					<!-- <view class="divider"></view> -->
 				</view>
-				<view class="time">
-					<text style="font-size: 120%;font-weight: bold;margin-right: 5%;">时间</text>
-					{{dateFormat(item.date)}}
-				</view>
-				<view class="thing">
-					<text style="font-size: 120%;font-weight: bold;margin-right: 5%;">事件</text>
-					{{item.content}}
-				</view>
-				<view class="divider"></view>
 			</view>
 		</uni-popup>
-		<!--<uni-popup ref="popup" background-color="#fff" type="bottom">
+		<!--<uni-popup ref="addDate" background-color="#fff" type="bottom">
 			<view class="pop">
 				<uni-forms :modelValue="accountData" label-width="70px">
 					 <uni-forms-item label="账户名称" name="accountDetailName">
@@ -151,7 +157,7 @@
 						})
 					else {
 						this.scheduleList = res.data.data.data;
-						this.$refs.popup.open('center');
+						this.$refs.dateList.open('center');
 					}
 				})
 			},
@@ -197,6 +203,7 @@
 
 	.calendar {
 		margin: 5%;
+		box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);
 	}
 
 	.bill_title {
@@ -208,17 +215,23 @@
 
 	.list {
 		padding: 10px 20px;
-		background-color: #56DFC0;
-		opacity: 0.8;
-		width: 250px;
+		background-color: rgba(242,243,245);
+		/* opacity: 0.8; */
+		width: 300px;
 	}
-
+	.scheduleShow{
+		/* width: 90%; */
+		background-color: #fff;
+		border-radius: 10%;
+		/* border: 1px solid #000000; */
+		/* box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2); */
+	}
 	.list .title {
 		font-size: 120%;
 		font-weight: bold;
 		margin-bottom: 3%;
 	}
-
+	
 	.navi {
 		background-color: #56DFC0;
 		box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);
@@ -252,9 +265,9 @@
 	}
 
 	.b_actions .button {
-		background-color: #D1FAF1;
+		background-color: #56DFC0;
 		border-radius: 5%;
-		box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);
+		box-shadow: 0 3px 8px #cac6;
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -301,14 +314,14 @@
 
 	.bill_card {
 		/* background-color: #56DFC0; */
-		box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);
+		box-shadow: 0 3px 8px #cac6;
 		display: flex;
 		flex-flow: row;
-		justify-content: start;
+		justify-content: flex-start;
 		align-items: center;
 		/* margin: 5% 0%; */
 		height: 180upx;
-		opacity: 0.9;
+		opacity: 0.8;
 		/* box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1); */
 		;
 	}

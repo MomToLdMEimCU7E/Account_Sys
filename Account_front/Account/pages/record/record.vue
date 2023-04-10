@@ -51,7 +51,7 @@
 								<!-- <input class="uni-input" v-model="remark" placeholder="请输入备注"></input> -->
 							</uni-forms-item>
 							<uni-forms-item label="日期">
-								<uni-datetime-picker type="date" v-model="numData.date" />
+								<uni-datetime-picker type="date" v-model="date" />
 							</uni-forms-item>
 						</uni-forms>
 						<button class="confim-btn" type="default" @click="done">提交</button>
@@ -63,10 +63,33 @@
 </template>
 
 <script>
+	function getDate(date, AddDayCount = 0) {
+		if (!date) {
+			date = new Date()
+		}
+		if (typeof date !== 'object') {
+			date = date.replace(/-/g, '/')
+		}
+		const dd = new Date(date)
+	
+		dd.setDate(dd.getDate() + AddDayCount) // 获取AddDayCount天后的日期
+	
+		const y = dd.getFullYear()
+		const m = dd.getMonth() + 1 < 10 ? '0' + (dd.getMonth() + 1) : dd.getMonth() + 1 // 获取当前月份的日期，不足10补0
+		const d = dd.getDate() < 10 ? '0' + dd.getDate() : dd.getDate() // 获取当前几号，不足10补0
+		return {
+			fullDate: y + '-' + m + '-' + d,
+			year: y,
+			month: m,
+			date: d,
+			day: dd.getDay()
+		}
+	}
 	export default {
 		data() {
 			return {
-
+				baseFormData: {},
+				date: '',
 			}
 		},
 		onReady() {
@@ -80,7 +103,8 @@
 			          // console.log('打印页面的剩余高度', this.scrollHeight);
 			        })
 			      }
-			    })
+			    });
+				this.date = getDate(new Date(), 0).fullDate;
 		},
 		methods: {
 

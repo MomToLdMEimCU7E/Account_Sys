@@ -4,7 +4,7 @@
 			<view class="content-item">
 				<view class="user-info">
 					<view>
-						<image src="/static/user.jpg" class="img" :mode="aspectFit"></image>
+						<image src="/static/user.jpg" class="img" ></image>
 					</view>
 					<view class="name">
 						<text>{{userName}}</text>
@@ -61,11 +61,11 @@
 					</navigator>
 				</view>
 				<scroll-view scroll-x="true" class="b_scroll" enable-flex="true">
-					<view class="content-show" style="justify-content: start;">
+					<view class="content-show" style="justify-content: flex-start;">
 						<view class="b_list" v-for="(item,index) in bookList" :key="index">
-							<image :src="item.bookKeepingCover" mode="scaleToFill"
+							<image  src="../../static/daily.png" mode="scaleToFill"
 								style="width: 150upx;height: 200upx;"></image>
-							<text class="b_name">{{item.bookKeepingName}}</text>
+							<text class="b_name">{{item}}</text>
 						</view>
 					</view>
 				</scroll-view>
@@ -74,7 +74,7 @@
 				<view class="settingbox">
 					<text class="switchTx">老年模式</text>
 					<text class="switchBu">
-						<tm-switch v-model="on"></tm-switch>
+						<!-- <tm-switch v-model="on"></tm-switch> -->
 					</text>
 				</view>
 			</uni-card>
@@ -91,6 +91,7 @@
 		},
 		data() {
 			return {
+				uid: '1',
 				accountCount: '111',
 				accountDay: '111',
 				userName: '测试用户',
@@ -117,8 +118,26 @@
 				]
 			}
 		},
+		onShow(){
+			this.getBookList();
+		},
 		methods: {
-
+			// async getBook() {
+			// 	const {
+			// 		data: res
+			// 	} = await uni.$http.get('/book/getBookNames?uid=' + this.uid)
+			// 	if (res.msg !== "成功") return uni.$showMsg()
+			// 	this.bookList = res.data.result
+			// 	console.log("123",res.data.result)
+			// },
+			getBookList(){
+				uni.$http.get('/book/getBookNames?uid=' + this.uid).then(res => {
+					if (res.data.message !== "成功")
+						return uni.$showMsg()
+					else this.bookList=res.data.result;
+					// console.log(res.data.result)
+				})
+			}
 		}
 	}
 </script>

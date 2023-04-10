@@ -31,7 +31,8 @@
 			<view class="p_list" v-for="(item,index) in propertyList" :key="index">
 				<!-- <navigator url="/subpkg/prodetail/prodetail?accountDetailId= + item.accountDetailId"> -->
 				<view class="p_card" @click="GoToprodetail(index)">
-					<img  class="c_img" src="../../static/icon_p6208913rbe/weixin.png" mode="widthFix">
+					<img  class="c_img" :src="'../../static/icon_p6208913rbe/' + item.icon + '.png'" mode="widthFix">
+					<!-- <uni-icons class="c_img" custom-prefix="iconfont" type="icon-weixin" size="75"></uni-icons> -->
 					<view class="c_name">
 						{{item.accountDetailName}}
 					</view>
@@ -198,7 +199,7 @@
 		box-shadow: 0 3px 8px rgba(0,37,204, 0.2);
 		display: flex;
 		flex-flow: row;
-		justify-content: start;
+		justify-content: flex-start;
 		align-items: center;
 		/* margin: 5% 0%; */
 		height: 180upx;

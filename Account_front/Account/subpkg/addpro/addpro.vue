@@ -93,7 +93,7 @@
 							placeholder="请输入账户名称" />
 					</uni-forms-item> -->
 					<uni-forms-item label="金额" name="balance">
-						<uni-easyinput class="pop_in" prefixIcon="search" type="text" v-model="accountData.balance"
+						<uni-easyinput class="pop_in" type="text" v-model="accountData.balance"
 							placeholder="请输入金额" />
 					</uni-forms-item>
 					<uni-forms-item label="备注" name="comment">
@@ -147,7 +147,7 @@
 			},
 			addpro3() {
 				this.$refs.popup.open("bottom");
-				this.accountData.accountDetailTypeId = 1;
+				this.accountData.accountDetailTypeId = 3;
 			},
 			addpro4() {
 				this.$refs.popup.open("bottom");

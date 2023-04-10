@@ -2,7 +2,7 @@
 	<view>
 		<view class="p_list">
 			<view class="p_card">
-				<img class="c_img" src="../../static/icon_p6208913rbe/weixin.png" mode="widthFix">
+				<img class="c_img" :src="'../../static/icon_p6208913rbe/' + proDetail.icon + '.png'" mode="widthFix">
 				<view class="c_name">
 					{{proDetail.accountDetailName}}
 					<view class="c_amount">
@@ -18,10 +18,13 @@
 				无
 			</view>
 		</view>
-		<view class="navi" @click="dialogToggle('info')">
+		<view class="navi" @click="changeDialogOpen()">
+			<uni-icons type="trash-filled" size="25"></uni-icons>修改账户
+		</view>
+		<view class="navi2" @click="deleteDialogOpen()">
 			<uni-icons type="trash-filled" size="25"></uni-icons>删除账户
 		</view>
-		<uni-popup ref="alertDialog" type="dialog">
+		<uni-popup ref="deleteDialog" type="dialog">
 			<uni-popup-dialog type="error" cancelText="取消" confirmText="确定" title="请注意!" content="确定删除该账户吗"
 				@confirm="deleteConfirm"></uni-popup-dialog>
 		</uni-popup>
@@ -41,8 +44,8 @@
 			// console.log(this.proDetail);
 		},
 		methods: {
-			dialogToggle() {
-				this.$refs.alertDialog.open()
+			deleteDialogOpen() {
+				this.$refs.deleteDialog.open()
 				// console.log(this.proDetail.accountDetailId)
 			},
 			deleteConfirm() {
@@ -73,7 +76,7 @@
 		margin: 5% 5%;
 		background-color: #56DFC0;
 		display: flex;
-		justify-content: start;
+		justify-content: flex-start;
 		align-items: center;
 		flex-wrap: wrap;
 		opacity: 0.9;
@@ -82,7 +85,7 @@
 
 	.p_card {
 		display: flex;
-		justify-content: start;
+		justify-content: flex-start;
 		align-items: center;
 		flex-wrap: wrap;
 		/* margin: 5% 0%; */
@@ -130,8 +133,19 @@
 		margin: 2% 5%;
 		font-size: 110%;
 	}
-
 	.navi {
+		background-color: #56DFC0;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 110%;
+		height: 100upx;
+		margin: 0% 5% 3%;
+		box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1);
+		/* opacity: 0.9; */
+	}
+	
+	.navi2 {
 		background-color: #E65452;
 		display: flex;
 		justify-content: center;
@@ -139,6 +153,7 @@
 		font-size: 110%;
 		height: 100upx;
 		margin: 0% 5%;
+		box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1);
 		/* opacity: 0.9; */
 	}
 </style>

@@ -1,10 +1,22 @@
 package com.demo.account.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.demo.account.Po.CreateBookPo;
+import com.demo.account.Po.InPo;
+import com.demo.account.Po.PayPo;
+import com.demo.account.Po.UpdateBookPo;
+import com.demo.account.Vo.FundIconListVo;
+import com.demo.account.common.Result;
 import com.demo.account.entity.*;
+import com.demo.account.exception.BizException;
 import com.demo.account.mapper.BookMapper;
+import com.demo.account.mapper.Budget2Mapper;
+import com.demo.account.mapper.BudgetMapper;
 import com.demo.account.mapper.IncomePaymentMapper;
 import com.demo.account.service.BookService;
+import com.demo.account.utils.DateUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +32,12 @@ public class BookServiceImpl implements BookService {
 
     @Resource
     private IncomePaymentMapper incomePaymentMapper;
+
+    @Resource
+    private BudgetMapper budgetMapper;
+
+    @Resource
+    Budget2Mapper budget2Mapper;
 
     @Override
     public List<BasicFund> selectAllBasicFund() {
@@ -104,68 +122,110 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public String bookkeepingPayment(int uid, String bookKeepingName, String bookKeepingTypeName,int accountId, String amount, Timestamp time,
-                                     String fundId, String customedFundId, String comment, String enclosure)
+    public String bookkeepingPayment(PayPo payPo)
     {
-        int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
-        int bookKeepingId=bookMapper.findBookKeepingId(uid,bookKeepingName,bookKeepingTypeId);
-        bookMapper.insertIntoPayment(uid, bookKeepingId, accountId, amount, time, fundId, customedFundId, comment, enclosure);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        //int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
+        //int bookKeepingId=bookMapper.findBookKeepingId(uid,bookKeepingName,bookKeepingTypeId);
+        int bookKeepingId=bookMapper.selectBookkeepingId(payPo.getUid(),payPo.getBookKeepingName());
+        bookMapper.insertIntoPayment(payPo.getUid(), bookKeepingId, payPo.getAccountId(), payPo.getAmount(), timestamp, payPo.getFundId(), payPo.getCustomedFundId(), payPo.getComment(), payPo.getEnclosure());
         return "success";
     }
 
     @Override
-    public String bookkeepingIncome(int uid, String bookKeepingName, String bookKeepingTypeName, int accountId, String amount, Timestamp time, String fundId, String customedFundId, String comment, String enclosure) {
-        int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
-        int bookKeepingId=bookMapper.findBookKeepingId(uid,bookKeepingName,bookKeepingTypeId);
-        bookMapper.insertIntoIncome(uid, bookKeepingId, accountId, amount, time, fundId, customedFundId, comment, enclosure);
+    public String bookkeepingIncome(InPo inPo) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        //int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
+        //int bookKeepingId=bookMapper.findBookKeepingId(uid,bookKeepingName,bookKeepingTypeId);
+        int bookKeepingId=bookMapper.selectBookkeepingId(inPo.getUid(),inPo.getBookKeepingName());
+        bookMapper.insertIntoIncome(inPo.getUid(), bookKeepingId, inPo.getAccountId(), inPo.getAmount(), timestamp, inPo.getFundId(), inPo.getCustomedFundId(), inPo.getComment(), inPo.getEnclosure());
         return "success";
     }
 
     @Override
-    public List<JSONObject> selectBookkeepingIncome(int uid, String bookKeepingName, String bookKeepingTypeName) {
-        int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
-        int bookKeepingId=bookMapper.findBookKeepingId(uid,bookKeepingName,bookKeepingTypeId);
+    public List<JSONObject> selectBookkeepingIncome(int uid, String bookKeepingName) {
+        //int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
+        int bookKeepingId=bookMapper.selectBookkeepingId(uid,bookKeepingName);
         List<Income> ls=incomePaymentMapper.selectAllIncome(bookKeepingId);
         List<JSONObject> lsobject=new ArrayList<>();
+        List<BasicFund> basicFunds=bookMapper.selectAllBasicFunds();
+        HashMap<String,String> bfm=new HashMap<>(); // 记录基础款项的HashMap
+        // 给bfm赋值
+        for (BasicFund i:basicFunds){
+            bfm.put(i.getFund_id(),i.getFund_name());
+        }
         for (Income i:ls){
             JSONObject object=new JSONObject();
             AccountDetail ac=incomePaymentMapper.selectAccountDetails(i.getAccountDetailId());
-            object.put("收入明细",i);
-            object.put("对应账户",ac);
+            object.put("时间",i.getTime());
+            object.put("备注",i.getComment());
+            object.put("金额",i.getAmount());
+            String fundName=bfm.get(i.getFundId());
+            if (fundName!=null){
+                object.put("款项名称",fundName);
+                object.put("款项类型","基本");
+            }else {
+                String customName=bookMapper.selectCustomedFundName(i.getCustomedFundId());
+                object.put("款项名称",customName);
+                object.put("款项类型","自定义");
+            }
+            object.put("账户名称",incomePaymentMapper.getAccountTypeName(ac.getAccountDetailType()));
             lsobject.add(object);
         }
         return lsobject;
     }
 
     @Override
-    public List<JSONObject> selectBookkeepingPayment(int uid, String bookKeepingName, String bookKeepingTypeName) {
-        int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
-        int bookKeepingId=bookMapper.findBookKeepingId(uid,bookKeepingName,bookKeepingTypeId);
+    public List<JSONObject> selectBookkeepingPayment(int uid, String bookKeepingName) {
+        //int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
+        int bookKeepingId=bookMapper.selectBookkeepingId(uid,bookKeepingName);
         List<Payment> ls=incomePaymentMapper.selectAllPayment(bookKeepingId);
         List<JSONObject> lsobject=new ArrayList<>();
+        List<BasicFund> basicFunds=bookMapper.selectAllBasicFunds();
+        HashMap<String,String> bfm=new HashMap<>(); // 记录基础款项的HashMap
+        // 给bfm赋值
+        for (BasicFund i:basicFunds){
+            bfm.put(i.getFund_id(),i.getFund_name());
+        }
         for (Payment i:ls){
             JSONObject object=new JSONObject();
             AccountDetail ac=incomePaymentMapper.selectAccountDetails(i.getAccountDetailId());
-            object.put("支出明细",i);
-            object.put("对应账户",ac);
+            object.put("时间",i.getTime());
+            object.put("备注",i.getComment());
+            object.put("金额","-"+i.getAmount());
+            String fundName=bfm.get(i.getFundId());
+            if (fundName!=null){
+                object.put("款项名称",fundName);
+                object.put("款项类型","基本");
+            }else {
+                String customName=bookMapper.selectCustomedFundName(i.getCustomedFundId());
+                object.put("款项名称",customName);
+                object.put("款项类型","自定义");
+            }
+            object.put("账户名称",incomePaymentMapper.getAccountTypeName(ac.getAccountDetailType()));
             lsobject.add(object);
         }
         return lsobject;
     }
 
     @Override
-    public String bookkeepingAdd(int uid, String bookKeepingName, String bookKeepingCover, String bookkeepingPeriod, Timestamp bookkeepingCreateDate,
-                                 Timestamp bookkeepingEndDate, Integer extraMember1, Integer extraMember2,
+    public String bookkeepingAdd(int uid, String bookKeepingName, String bookKeepingCover, Integer extraMember1, Integer extraMember2,
                                  String template,String bookKeepingTypeName) {
+        List<String> bookKeepingNameList=bookMapper.selectUserBookkeeping(uid);
+        if (bookKeepingNameList.contains(bookKeepingName)) throw new BizException("-1","账本名不能重复");
         int typeId=bookMapper.generalTypeId()+1;
-        bookMapper.insertIntoBookKeeping(uid,bookKeepingName,bookKeepingCover,bookkeepingPeriod,bookkeepingCreateDate,bookkeepingEndDate,extraMember1,extraMember2,typeId);
+        bookMapper.insertIntoBookKeeping(uid,bookKeepingName,bookKeepingCover,extraMember1,extraMember2,typeId);
         bookMapper.insertIntoBookkeepingType(typeId,bookKeepingTypeName,template);
         return "success";
     }
 
     @Override
-    public String bookkeepingChange(int uid, String bookKeepingName, String bookKeepingCover, String bookkeepingPeriod, Timestamp bookkeepingCreateDate, Timestamp bookkeepingEndDate, Integer extraMember1, Integer extraMember2) {
-        bookMapper.changeBookKeeping(uid, bookKeepingName, bookKeepingCover, bookkeepingPeriod, bookkeepingCreateDate, bookkeepingEndDate, extraMember1, extraMember2);
+    public String bookkeepingChange(int uid, String bookKeepingName,String bookKeepingNameNew, String bookKeepingCover, Integer extraMember1, Integer extraMember2) {
+        List<String> bookKeepingNameList=bookMapper.selectUserBookkeeping(uid);
+        if (!bookKeepingNameList.contains(bookKeepingName)) throw new BizException("-1","账本名不存在");
+        bookKeepingNameList.remove(bookKeepingName);
+        if (bookKeepingNameList.contains(bookKeepingNameNew)) throw new BizException("-1","新的账本名重名");
+        bookMapper.changeBookKeeping(uid, bookKeepingName, bookKeepingNameNew,bookKeepingCover, extraMember1, extraMember2);
         return "success";
     }
 
@@ -178,6 +238,474 @@ public class BookServiceImpl implements BookService {
             typeNames.add(bookMapper.selectBookkeepingTypeName(i.getBookkeeping_type_id()));
         }
         return typeNames;
+    }
+
+    //用于收入款项统计的私有方法用于 countWeekIncome countMonthIncome countYearIncome
+    private void incomeFundMapCreate(String fundName,Income i,HashMap<String,Integer> custom,HashMap<String,Integer> funds){
+        if (fundName!=null){ // 如果是基础款项
+            if (!funds.containsKey(fundName))
+                funds.put(fundName,Integer.parseInt(i.getAmount()));
+            else
+                funds.put(fundName,funds.get(fundName)+Integer.parseInt(i.getAmount()));
+        }else { // 如果是自定义款项
+            String customName=bookMapper.selectCustomedFundName(i.getCustomedFundId());
+            if (!custom.containsKey(customName))
+                custom.put(customName,Integer.parseInt(i.getAmount()));
+            else
+                custom.put(customName,custom.get(customName)+Integer.parseInt(i.getAmount()));
+        }
+    }
+
+    private void  paymentFundMapCreate(String fundName,Payment i,HashMap<String,Integer> custom,HashMap<String,Integer> funds){
+        if (fundName!=null){ // 如果是基础款项
+            if (!funds.containsKey(fundName))
+                funds.put(fundName,Integer.parseInt(i.getAmount()));
+            else
+                funds.put(fundName,funds.get(fundName)+Integer.parseInt(i.getAmount()));
+        }else { // 如果是自定义款项
+            String customName=bookMapper.selectCustomedFundName(i.getCustomedFundId());
+            if (!custom.containsKey(customName))
+                custom.put(customName,Integer.parseInt(i.getAmount()));
+            else
+                custom.put(customName,custom.get(customName)+Integer.parseInt(i.getAmount()));
+        }
+    }
+    @Override
+    public HashMap<String,HashMap<String, Integer>> countWeekIncome(int uid, String bookKeepingName, String nowTime) {
+        //int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
+        //int bookKeepingId=bookMapper.findBookKeepingId(uid,bookKeepingName,bookKeepingTypeId);
+        int bookKeepingId=bookMapper.selectBookkeepingId(uid,bookKeepingName);
+        List<Income> ls=incomePaymentMapper.selectAllIncome(bookKeepingId); // 获取对应账本的收入记录
+        HashMap<String,Integer> hm= new HashMap<>();
+        //初始化 hm
+        String[] weeks={"星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
+        String format="yyyy-MM-dd HH:mm:ss";
+        for (String i:weeks){
+            hm.put(i,0);
+        }
+
+        // 获取当前日期所对应那一周的范围 例如今天是 2023年4月3日 那么一周对应的日期范围是 [2023-04-03 00:00:00 2023-04-09 23:59:59]
+        List<String> startEndTimeList=DateUtils.getStartAndEndTime(DateUtils.strToSqlDate(nowTime,format));
+        Timestamp startTime=DateUtils.strToSqlDate(startEndTimeList.get(0),format);
+        Timestamp endTime=DateUtils.strToSqlDate(startEndTimeList.get(1),format);
+
+        HashMap<String,Integer> funds=new HashMap<>(); // 记录基础款项的HashMap
+        HashMap<String,Integer> custom=new HashMap<>(); // 记录自定义款项的HashMap
+        List<BasicFund> basicFunds=bookMapper.selectAllBasicFunds();
+        HashMap<String,String> bfm=new HashMap<>(); // 记录基础款项的HashMap
+        // 给bfm赋值
+        for (BasicFund i:basicFunds){
+            bfm.put(i.getFund_id(),i.getFund_name());
+        }
+
+        for (Income i:ls){
+            String time= DateUtils.dateToStr(i.getTime(),format);
+
+            // 判断这个时间是星期几
+            String week=DateUtils.getWeek(time,format);
+
+            // 判断支出记录的时间是否在这个区间内
+            boolean whetherInThisMonth=DateUtils.isEffectiveDate(i.getTime(),startTime,endTime);
+
+            // 如果记录中的时间是对应区间中的,就获取hp中对应星期的值并且更改
+            if (whetherInThisMonth){
+                Integer temp=hm.get(week)+Integer.parseInt(i.getAmount());
+                hm.put(week,temp);
+                /*-------------------------*/
+                String fundName=bfm.get(i.getFundId()); //表示BI*所对应的款项名称
+                incomeFundMapCreate(fundName,i,custom,funds);
+            }
+        }
+        //System.out.println(hm);
+        HashMap<String,HashMap<String, Integer>> result=new HashMap<>();
+        result.put("周收入总和",hm);
+        result.put("基础款项总和",funds);
+        result.put("自定义款项总和",custom);
+        System.out.println(result);
+        return result;
+    }
+
+    @Override
+    public HashMap<String,HashMap<String, Integer>>  countMonthIncome(int uid, String bookKeepingName, String startTime, String endTime) {
+        //int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
+        //int bookKeepingId=bookMapper.findBookKeepingId(uid,bookKeepingName,bookKeepingTypeId);
+        int bookKeepingId=bookMapper.selectBookkeepingId(uid,bookKeepingName);
+        List<Income> ls=incomePaymentMapper.selectAllIncome(bookKeepingId);
+        HashMap<String,Integer> hm= new HashMap<>();
+        String format="yyyy-MM-dd HH:mm:ss";
+        int maxDayOfMonth=DateUtils.getDaysOfMonth(DateUtils.strToSqlDate(startTime,format));
+        for (Integer i=1;i<=maxDayOfMonth;i++){
+            hm.put(i.toString(),0);
+        }
+
+        HashMap<String,Integer> funds=new HashMap<>(); // 记录基础款项的HashMap
+        HashMap<String,Integer> custom=new HashMap<>(); // 记录自定义款项的HashMap
+        List<BasicFund> basicFunds=bookMapper.selectAllBasicFunds();
+        HashMap<String,String> bfm=new HashMap<>(); // 记录基础款项的HashMap
+        // 给bfm赋值
+        for (BasicFund i:basicFunds){
+            bfm.put(i.getFund_id(),i.getFund_name());
+        }
+
+        for(Income i:ls){
+            boolean whetherInThisMonth=DateUtils.isEffectiveDate(i.getTime(),DateUtils.strToSqlDate(startTime,format),DateUtils.strToSqlDate(endTime,format));
+            if (whetherInThisMonth){
+                String day=DateUtils.getMonthDay2Set(DateUtils.dateToStr(i.getTime(),format),"day").toString();
+                Integer temp=hm.get(day)+Integer.parseInt(i.getAmount());
+                hm.put(day,temp);
+                /*-------------------------*/
+                String fundName=bfm.get(i.getFundId()); //表示BI*所对应的款项名称
+                incomeFundMapCreate(fundName,i,custom,funds);
+            }
+        }
+        //System.out.println(hm);
+        HashMap<String,HashMap<String, Integer>> result=new HashMap<>();
+        result.put("当月每天收入",hm);
+        result.put("基础款项总和",funds);
+        result.put("自定义款项总和",custom);
+        System.out.println(result);
+        return result;
+    }
+
+    @Override
+    public HashMap<String,HashMap<String, Integer>> countYearIncome(int uid, String bookKeepingName, String startTime, String endTime) {
+        //int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
+        //int bookKeepingId=bookMapper.findBookKeepingId(uid,bookKeepingName,bookKeepingTypeId);
+        int bookKeepingId=bookMapper.selectBookkeepingId(uid,bookKeepingName);
+        List<Income> ls=incomePaymentMapper.selectAllIncome(bookKeepingId);
+        HashMap<String,Integer> hm= new HashMap<>();
+        String format="yyyy-MM-dd HH:mm:ss";
+        for (Integer i=1;i<=12;i++){
+            hm.put(i.toString(),0);
+        }
+
+        HashMap<String,Integer> funds=new HashMap<>(); // 记录基础款项的HashMap
+        HashMap<String,Integer> custom=new HashMap<>(); // 记录自定义款项的HashMap
+        List<BasicFund> basicFunds=bookMapper.selectAllBasicFunds();
+        HashMap<String,String> bfm=new HashMap<>(); // 记录基础款项的HashMap
+        // 给bfm赋值
+        for (BasicFund i:basicFunds){
+            bfm.put(i.getFund_id(),i.getFund_name());
+        }
+
+        for(Income i:ls){
+            boolean whetherInThisYear=DateUtils.isEffectiveDate(i.getTime(),DateUtils.strToSqlDate(startTime,format),DateUtils.strToSqlDate(endTime,format));
+            if (whetherInThisYear){
+                String month=DateUtils.getMonthDay2Set(DateUtils.dateToStr(i.getTime(),format),"month").toString();
+                Integer temp=hm.get(month)+Integer.parseInt(i.getAmount());
+                hm.put(month,temp);
+                /*-------------------------*/
+                String fundName=bfm.get(i.getFundId()); //表示BI*所对应的款项名称
+                incomeFundMapCreate(fundName,i,custom,funds);
+            }
+        }
+        //System.out.println(hm);
+        HashMap<String,HashMap<String, Integer>> result=new HashMap<>();
+        result.put("当年每月收入",hm);
+        result.put("基础款项总和",funds);
+        result.put("自定义款项总和",custom);
+        System.out.println(result);
+        return result;
+    }
+
+    @Override
+    public HashMap<String, HashMap<String, Integer>> countWeekPayment(int uid, String bookKeepingName, String nowTime) {
+        //int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
+        //int bookKeepingId=bookMapper.findBookKeepingId(uid,bookKeepingName,bookKeepingTypeId);
+        int bookKeepingId=bookMapper.selectBookkeepingId(uid,bookKeepingName);
+        List<Payment> ls=incomePaymentMapper.selectAllPayment(bookKeepingId); // 获取对应账本的收入记录
+        HashMap<String,Integer> hm= new HashMap<>();
+        //初始化 hm
+        String[] weeks={"星期一","星期二","星期三","星期四","星期五","星期六","星期日"};
+        String format="yyyy-MM-dd HH:mm:ss";
+        for (String i:weeks){
+            hm.put(i,0);
+        }
+
+        // 获取当前日期所对应那一周的范围 例如今天是 2023年4月3日 那么一周对应的日期范围是 [2023-04-03 00:00:00 2023-04-09 23:59:59]
+        List<String> startEndTimeList=DateUtils.getStartAndEndTime(DateUtils.strToSqlDate(nowTime,format));
+        Timestamp startTime=DateUtils.strToSqlDate(startEndTimeList.get(0),format);
+        Timestamp endTime=DateUtils.strToSqlDate(startEndTimeList.get(1),format);
+
+        HashMap<String,Integer> funds=new HashMap<>(); // 记录基础款项的HashMap
+        HashMap<String,Integer> custom=new HashMap<>(); // 记录自定义款项的HashMap
+        List<BasicFund> basicFunds=bookMapper.selectAllBasicFunds();
+        HashMap<String,String> bfm=new HashMap<>(); // 记录基础款项的HashMap
+        // 给bfm赋值
+        for (BasicFund i:basicFunds){
+            bfm.put(i.getFund_id(),i.getFund_name());
+        }
+
+        for (Payment i:ls){
+            String time= DateUtils.dateToStr(i.getTime(),format);
+
+            // 判断这个时间是星期几
+            String week=DateUtils.getWeek(time,format);
+
+            // 判断支出记录的时间是否在这个区间内
+            boolean whetherInThisMonth=DateUtils.isEffectiveDate(i.getTime(),startTime,endTime);
+
+            // 如果记录中的时间是对应区间中的,就获取hp中对应星期的值并且更改
+            if (whetherInThisMonth){
+                Integer temp=hm.get(week)+Integer.parseInt(i.getAmount());
+                hm.put(week,temp);
+                /*-------------------------*/
+                String fundName=bfm.get(i.getFundId()); //表示BO*所对应的款项名称
+                paymentFundMapCreate(fundName,i,custom,funds);
+            }
+        }
+        //System.out.println(hm);
+        HashMap<String,HashMap<String, Integer>> result=new HashMap<>();
+        result.put("周支出总和",hm);
+        result.put("基础款项总和",funds);
+        result.put("自定义款项总和",custom);
+        System.out.println(result);
+        return result;
+    }
+
+    @Override
+    public HashMap<String, HashMap<String, Integer>> countMonthPayment(int uid, String bookKeepingName, String startTime, String endTime) {
+        //int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
+        //int bookKeepingId=bookMapper.findBookKeepingId(uid,bookKeepingName,bookKeepingTypeId);
+        int bookKeepingId=bookMapper.selectBookkeepingId(uid,bookKeepingName);
+        List<Payment> ls=incomePaymentMapper.selectAllPayment(bookKeepingId);
+        HashMap<String,Integer> hm= new HashMap<>();
+        String format="yyyy-MM-dd HH:mm:ss";
+        int maxDayOfMonth=DateUtils.getDaysOfMonth(DateUtils.strToSqlDate(startTime,format));
+        for (Integer i=1;i<=maxDayOfMonth;i++){
+            hm.put(i.toString(),0);
+        }
+
+        HashMap<String,Integer> funds=new HashMap<>(); // 记录基础款项的HashMap
+        HashMap<String,Integer> custom=new HashMap<>(); // 记录自定义款项的HashMap
+        List<BasicFund> basicFunds=bookMapper.selectAllBasicFunds();
+        HashMap<String,String> bfm=new HashMap<>(); // 记录基础款项的HashMap
+        // 给bfm赋值
+        for (BasicFund i:basicFunds){
+            bfm.put(i.getFund_id(),i.getFund_name());
+        }
+
+        for(Payment i:ls){
+            boolean whetherInThisMonth=DateUtils.isEffectiveDate(i.getTime(),DateUtils.strToSqlDate(startTime,format),DateUtils.strToSqlDate(endTime,format));
+            if (whetherInThisMonth){
+                String day=DateUtils.getMonthDay2Set(DateUtils.dateToStr(i.getTime(),format),"day").toString();
+                Integer temp=hm.get(day)+Integer.parseInt(i.getAmount());
+                hm.put(day,temp);
+                /*-------------------------*/
+                String fundName=bfm.get(i.getFundId()); //表示BO*所对应的款项名称
+                paymentFundMapCreate(fundName,i,custom,funds);
+            }
+        }
+        //System.out.println(hm);
+        HashMap<String,HashMap<String, Integer>> result=new HashMap<>();
+        result.put("当月每天支出",hm);
+        result.put("基础款项总和",funds);
+        result.put("自定义款项总和",custom);
+        System.out.println(result);
+        return result;
+    }
+
+    @Override
+    public HashMap<String, HashMap<String, Integer>> countYearPayment(int uid, String bookKeepingName, String startTime, String endTime) {
+        //int bookKeepingTypeId=bookMapper.findBookKeepingTypeIdInConditions(uid,bookKeepingName,bookKeepingTypeName);
+        //int bookKeepingId=bookMapper.findBookKeepingId(uid,bookKeepingName,bookKeepingTypeId);
+        int bookKeepingId=bookMapper.selectBookkeepingId(uid,bookKeepingName);
+        List<Payment> ls=incomePaymentMapper.selectAllPayment(bookKeepingId);
+        HashMap<String,Integer> hm= new HashMap<>();
+        String format="yyyy-MM-dd HH:mm:ss";
+        for (Integer i=1;i<=12;i++){
+            hm.put(i.toString(),0);
+        }
+
+        HashMap<String,Integer> funds=new HashMap<>(); // 记录基础款项的HashMap
+        HashMap<String,Integer> custom=new HashMap<>(); // 记录自定义款项的HashMap
+        List<BasicFund> basicFunds=bookMapper.selectAllBasicFunds();
+        HashMap<String,String> bfm=new HashMap<>(); // 记录基础款项的HashMap
+        // 给bfm赋值
+        for (BasicFund i:basicFunds){
+            bfm.put(i.getFund_id(),i.getFund_name());
+        }
+
+        for(Payment i:ls){
+            boolean whetherInThisYear=DateUtils.isEffectiveDate(i.getTime(),DateUtils.strToSqlDate(startTime,format),DateUtils.strToSqlDate(endTime,format));
+            if (whetherInThisYear){
+                String month=DateUtils.getMonthDay2Set(DateUtils.dateToStr(i.getTime(),format),"month").toString();
+                Integer temp=hm.get(month)+Integer.parseInt(i.getAmount());
+                hm.put(month,temp);
+                /*-------------------------*/
+                String fundName=bfm.get(i.getFundId()); //表示BI*所对应的款项名称
+                paymentFundMapCreate(fundName,i,custom,funds);
+            }
+        }
+        //System.out.println(hm);
+        HashMap<String,HashMap<String, Integer>> result=new HashMap<>();
+        result.put("当年每月支出",hm);
+        result.put("基础款项总和",funds);
+        result.put("自定义款项总和",custom);
+        System.out.println(result);
+        return result;
+    }
+
+    @Override
+    public List<String> selectUserBookkeeping(int uid) {
+        return bookMapper.selectUserBookkeeping(uid);
+    }
+
+    private boolean monthInputCheck(String month){
+        String[] months={"jan","feb","mar","apr","may","jun","jul","aug","sept","oct","nov","dec"};
+        for (String i: months){
+            if (Objects.equals(i, month)){
+                return true;
+            }
+        }
+        return false;
+    }
+    @Override
+    public JSONObject getBookkeepingBudget(int uid, String bookKeepingName,String month) {
+        int bookKeepingId=bookMapper.selectBookkeepingId(uid,bookKeepingName);
+        boolean validOrNot;
+        validOrNot=monthInputCheck(month);
+        JSONObject object=new JSONObject();
+        if (validOrNot){
+            Budget budget=budgetMapper.selectBookkeepingBudget(bookKeepingId);
+            JSONObject budgetMonth=(JSONObject) JSONObject.toJSON(budget);
+            object.put("该月预算为",budgetMonth.get(month));
+        }else {
+            throw new BizException("-1","月份的输入不正确应为jan/feb/mar/apr/may/jun/jul/aug/sept/oct/nov/dec其中之一");
+        }
+        return object;
+    }
+
+    @Override
+    public String changeBookkeepingBudget(int uid, String bookKeepingName, String month, String budget) {
+        int bookKeepingId;
+        try{
+            bookKeepingId=bookMapper.selectBookkeepingId(uid,bookKeepingName);
+        }catch (Exception e){
+            throw new BizException("-1","没找到该账簿");
+        }
+        boolean validOrNot;
+        validOrNot=monthInputCheck(month);
+        if (validOrNot){
+            budgetMapper.updateBudget(month,budget,bookKeepingId);
+        }else {
+            throw new BizException("-1","月份的输入不正确应为jan/feb/mar/apr/may/jun/jul/aug/sept/oct/nov/dec其中之一");
+        }
+        return "success";
+    }
+
+    @Override
+    public List<JSONObject> getPartRecordOfIncomeAndPayment(int uid, String bookKeepingName, String classification,List<JSONObject> allPayment,List<JSONObject> allIncome) {
+        String[] ys={"餐饮","蔬菜","水果","零食"}; // 饮食大类
+        String[] yl={"通讯","社交","旅行","购物","娱乐"}; // 娱乐大类
+        String[] jt={"快递","交通"}; // 交通大类
+        String[] sh={"服饰","家庭","住房","日用","运动"}; // 生活大类
+        String[] gz={"工资","年终奖","收款"}; // 工资大类
+        String[] lc={"分红","理财"}; // 理财大类
+        String[] rq={"借入","礼金","红包"}; // 人情大类
+        String[] other={"生活费","其它","租金"}; // 其它大类
+        String[] whichClassification;
+        switch (classification){
+            case "饮食": whichClassification=ys;break;
+            case "娱乐": whichClassification=yl;break;
+            case "交通": whichClassification=jt;break;
+            case "生活": whichClassification=sh;break;
+            case "工资": whichClassification=gz;break;
+            case "理财": whichClassification=lc;break;
+            case "人情": whichClassification=rq;break;
+            case "其它": whichClassification=other;break;
+            default: throw new BizException("-1","类别输入错误可选输入有{饮食/娱乐/交通/生活/工资/理财/人情/其它}");
+        }
+        List<JSONObject> result=new ArrayList<>();
+        if (classification.equals("其它")){
+            for (JSONObject i:allPayment){
+                if (i.get("款项类型").toString().equals("自定义")){
+                    result.add(i);
+                }
+            }
+            for (JSONObject i:allIncome){
+                if (i.get("款项类型").toString().equals("自定义")){
+                    result.add(i);
+                }
+            }
+        }
+        for (JSONObject i: allPayment){
+            for (String j:whichClassification){
+                if (i.get("款项名称").toString().equals(j)){
+                    result.add(i);
+                }
+            }
+        }
+        for (JSONObject i:allIncome){
+            for (String j:whichClassification){
+                if (i.get("款项名称").toString().equals(j)){
+                    result.add(i);
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public String deleteBookkeeping(int uid, String bookKeepingName) {
+        try{
+            bookMapper.selectBookkeepingId(uid,bookKeepingName);
+        }catch (Exception e){
+            throw new BizException("-1","没找到该账簿");
+        }
+        bookMapper.deleteBookkeeping(uid, bookKeepingName);
+        return "success";
+    }
+
+    @Override
+    public String deleteCustomFund(String customFundId) {
+        List<String> list=bookMapper.selectAllCustomFundId();
+        if (!list.contains(customFundId)) throw new BizException("-1","自定义款项不存在");
+        bookMapper.deleteCustomFund(customFundId);
+        return "success";
+    }
+
+    @Override
+    public Result<?> getBookList(Integer uid) {
+        return Result.success(bookMapper.getBookList(uid));
+    }
+
+    @Override
+    public Result<?> updateBook(UpdateBookPo updateBookPo) {
+        bookMapper.updateBook(updateBookPo.getBookkeepingCover(), updateBookPo.getBookkeepingName(), updateBookPo.getBookkeepingId());
+        budget2Mapper.updateBook(updateBookPo.getBudget(), updateBookPo.getBookkeepingId());
+        return Result.success();
+    }
+
+    @Override
+    public Result<?> getBudget(Integer bookkeepingId) {
+        return Result.success(budget2Mapper.getBudget(bookkeepingId));
+    }
+
+    @Override
+    public Result<?> createBook(CreateBookPo createBookPo) {
+        bookMapper.createBook(createBookPo.getUid(), createBookPo.getBookkeepingTypeId(), createBookPo.getBookkeepingCover(), createBookPo.getBookkeepingName(), createBookPo.getCustomedFundsId(), createBookPo.getExtraMember1(), createBookPo.getExtraMember2());
+        return Result.success();
+    }
+
+    @Override
+    public Result<?> detectBudget(Integer bookkeepingId) {
+        Budget2 res = budget2Mapper.selectOne(Wrappers.<Budget2>lambdaQuery().eq(Budget2::getBookkeepingId, bookkeepingId));
+        if (res == null){
+            budget2Mapper.createBudget(bookkeepingId, "0");
+        }
+        return Result.success();
+    }
+
+    @Override
+    public Result<?> getFundIcon(Integer bookkeepingTypeId) {
+        String FundIdString = bookMapper.getFundIdString(bookkeepingTypeId);
+        String[] id = FundIdString.split("-");
+        List<FundIconListVo> fundIconListVoList = new ArrayList<>();
+        for (int i = 0; i < id.length; i++) {
+            fundIconListVoList.add(bookMapper.getIcon(id[i]));
+        }
+        return Result.success(fundIconListVoList);
     }
 
     private HashMap<String,String> getPaymentType(int uid, String bookKeepingName, String type, String bookKeepingTypeName){
@@ -208,4 +736,6 @@ public class BookServiceImpl implements BookService {
         }
         return l;
     }
+
+
 }
