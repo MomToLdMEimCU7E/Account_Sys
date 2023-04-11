@@ -19,8 +19,14 @@
 			</view>
 		</view>
 		<view class="navi" @click="changeDialogOpen()">
-			<uni-icons type="trash-filled" size="25"></uni-icons>修改账户
+			<uni-icons type="compose" size="25"></uni-icons>修改账户
 		</view>
+		<uni-popup ref="changeDialog" type="dialog">
+			<uni-popup-dialog type="info" cancelText="取消" confirmText="确定" title="修改账户" content="确定修改吗"
+				@confirm="changeConfirm">
+				
+				</uni-popup-dialog>
+		</uni-popup>
 		<view class="navi2" @click="deleteDialogOpen()">
 			<uni-icons type="trash-filled" size="25"></uni-icons>删除账户
 		</view>
@@ -36,6 +42,9 @@
 		data() {
 			return {
 				proDetail: [],
+				updatePro: {
+					
+				}
 			}
 		},
 		onLoad: function(option) {
@@ -44,6 +53,10 @@
 			// console.log(this.proDetail);
 		},
 		methods: {
+			changeDialogOpen() {
+				this.$refs.changeDialog.open()
+				// console.log(this.proDetail.accountDetailId)
+			},
 			deleteDialogOpen() {
 				this.$refs.deleteDialog.open()
 				// console.log(this.proDetail.accountDetailId)

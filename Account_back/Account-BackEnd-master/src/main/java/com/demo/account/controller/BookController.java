@@ -10,11 +10,13 @@ import com.demo.account.entity.BasicFund;
 import com.demo.account.entity.BookKeeping;
 import com.demo.account.exception.BizException;
 import com.demo.account.exception.ResultBody;
+import com.demo.account.mapper.BookMapper;
 import com.demo.account.service.BookService;
 import com.demo.account.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +32,8 @@ public class BookController {
     public BookController(BookService bookService) {
         this.bookService = bookService;
     }
+    @Resource
+    BookMapper bookMapper;
 
     /**
      * @param uid 用户id
@@ -341,5 +345,12 @@ public class BookController {
     @ResponseBody
     Result<?> getFundIcon(@RequestParam Integer bookkeepingTypeId){
         return Result.success(bookService.getFundIcon(bookkeepingTypeId));
+    }
+
+    @DeleteMapping("/deleteBook")
+    @ResponseBody
+    Result<?> deleteBook(@RequestParam Integer bookkeepingId){
+
+        return Result.success(bookMapper.deleteBook(bookkeepingId));
     }
 }

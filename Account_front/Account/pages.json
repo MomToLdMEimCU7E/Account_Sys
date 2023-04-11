@@ -93,6 +93,15 @@
                 }
                 
                 }
+                ,{
+                    "path" : "bookdetail/bookdetail",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
             ]
 	}],
 	"globalStyle": {

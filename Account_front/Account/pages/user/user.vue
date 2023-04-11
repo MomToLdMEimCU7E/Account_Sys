@@ -4,7 +4,7 @@
 			<view class="content-item">
 				<view class="user-info">
 					<view>
-						<image src="/static/user.jpg" class="img" ></image>
+						<image src="/static/user.jpg" class="img"></image>
 					</view>
 					<view class="name">
 						<text>{{userName}}</text>
@@ -61,11 +61,11 @@
 					</navigator>
 				</view>
 				<scroll-view scroll-x="true" class="b_scroll" enable-flex="true">
-					<view class="content-show" style="justify-content: flex-start;">
-						<view class="b_list" v-for="(item,index) in bookList" :key="index">
-							<image  src="../../static/daily.png" mode="scaleToFill"
+					<view class="content-show" style="justify-content: flex-start;" >
+						<view class="b_list" v-for="(item,index) in bookList" :key="index" @click="GoToprodetail(index)">
+							<image :src="'../../static/' + item.bookkeepingCover +'.png'" mode="scaleToFill"
 								style="width: 150upx;height: 200upx;"></image>
-							<text class="b_name">{{item}}</text>
+							<text class="b_name">{{item.bookkeepingName}}</text>
 						</view>
 					</view>
 				</scroll-view>
@@ -95,47 +95,25 @@
 				accountCount: '111',
 				accountDay: '111',
 				userName: '测试用户',
-				bookList: [{
-						bookKeepingCover: '../../static/daily.png',
-						bookKeepingName: '日常开销'
-					},
-					{
-						bookKeepingCover: '../../static/daily.png',
-						bookKeepingName: '日常开销'
-					},
-					{
-						bookKeepingCover: '../../static/daily.png',
-						bookKeepingName: '日常开销'
-					},
-					{
-						bookKeepingCover: '../../static/daily.png',
-						bookKeepingName: '日常开销'
-					},
-					{
-						bookKeepingCover: '../../static/daily.png',
-						bookKeepingName: '日常开销'
-					},
-				]
+				bookList: [],
 			}
 		},
-		onShow(){
+		onShow() {
 			this.getBookList();
 		},
 		methods: {
-			// async getBook() {
-			// 	const {
-			// 		data: res
-			// 	} = await uni.$http.get('/book/getBookNames?uid=' + this.uid)
-			// 	if (res.msg !== "成功") return uni.$showMsg()
-			// 	this.bookList = res.data.result
-			// 	console.log("123",res.data.result)
-			// },
-			getBookList(){
-				uni.$http.get('/book/getBookNames?uid=' + this.uid).then(res => {
-					if (res.data.message !== "成功")
+			GoToprodetail(index) {
+				let item = encodeURIComponent(JSON.stringify(this.bookList[index]))
+				uni.navigateTo({
+					url: '/subpkg/bookdetail/bookdetail?item=' + item
+				})
+			},
+			getBookList() {
+				uni.$http.get('/book/getBookList?uid=' + this.uid).then(res => {
+					if (res.data.msg !== "成功")
 						return uni.$showMsg()
-					else this.bookList=res.data.result;
-					// console.log(res.data.result)
+					else this.bookList = res.data.data.data;
+					// console.log(this.bookList[0].bookkeepingCover)
 				})
 			}
 		}
@@ -158,14 +136,14 @@
 		display: flex;
 		align-items: center;
 		background-color: #13D0A5;
-		box-shadow: 0 3px 8px rgba(0,37,204, 0.2);
+		box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);
 		opacity: 0.8;
 		height: 250upx;
 		justify-content: flex-start;
 	}
 
 	.user-info .img {
-		box-shadow: 0 3px 8px rgba(0,37,204, 0.2);
+		box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);
 		margin: 5% 10%;
 		width: 180upx;
 		height: 180upx;
@@ -259,7 +237,7 @@
 	}
 
 	.b_list {
-		box-shadow: 0 3px 8px rgba(0,37,204, 0.2);
+		box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);
 		padding: 10px;
 		display: flex;
 		flex-flow: column;

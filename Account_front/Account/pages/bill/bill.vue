@@ -1,6 +1,15 @@
 <template>
 	<view>
 		<scroll-view scroll-y="true" :enable-flex="true" style="overflow: auto;">
+			<view class="pickerView">
+				<view style="margin: 0% 3%;">
+					当前账本
+				</view>
+				<picker v-model="bookList.bookkeepingId" :range="bookList" range-key="bookkeepingName"
+					:value="bookPickerIndex" @change="changeId">
+					<view>{{bookList[bookPickerIndex].bookkeepingName}}</view>
+				</picker>
+			</view>
 			<uni-calendar class="calendar" :selected="c_date.selected" :showMonth="true" @change="change" />
 			<view style="display: flex;justify-content: space-around;align-content: center;">
 				<view class="navi" @click="checkSchedule()">
@@ -16,7 +25,7 @@
 						本月总预算:{{budget}}
 					</view>
 				</template>
-				<text class="b_text">
+				<view class="b_text">
 					<view class="strip">
 						<view class="blue" :style="'width:'+info.progress+'%'">
 						</view>
@@ -25,17 +34,25 @@
 						剩余预算:{{left_budget}}
 					</view>
 					<view class="divider"></view>
-				</text>
+				</view>
 				<view slot="actions" class="b_actions">
-					<view class="button">
+					<view class="button" @click="changeBudgetDialog()">
 						设置预算
 					</view>
 				</view>
 			</uni-card>
+			<uni-popup ref="budgetDialog" type="dialog">
+				<uni-popup-dialog type="info" cancelText="取消" confirmText="确定" title="设置预算"
+					@confirm="changeBudgetConfirm()">
+					<uni-forms :modelValue="updateBudget">
+						<uni-easyinput v-model="updateBudget.budget" placeholder="请输入预算"></uni-easyinput>
+					</uni-forms>
+				</uni-popup-dialog>
+			</uni-popup>
 			<view class="bill_title">
 				<text style="font-size: 150%;font-weight: bold;">收支记录</text>
-				<select-lay :value="selecValue" placeholder="筛选" name="name" :options="options" @selectitem="selectitem"
-					style="width: 80px;background-color: #56DFC0;box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);font color: black;"></select-lay>
+				<!-- <select-lay :value="selecValue" placeholder="筛选" name="name" :options="options" @selectitem="selectitem"
+					style="width: 80px;background-color: #56DFC0;box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);font color: black;"></select-lay> -->
 			</view>
 			<view class="bill_list" v-for="(item,index) in payList" :key="index">
 				<view class="bill_card" @click="GoToprodetail(index)">
@@ -71,24 +88,6 @@
 				</view>
 			</view>
 		</uni-popup>
-		<!--<uni-popup ref="addDate" background-color="#fff" type="bottom">
-			<view class="pop">
-				<uni-forms :modelValue="accountData" label-width="70px">
-					 <uni-forms-item label="账户名称" name="accountDetailName">
-						<uni-easyinput class="pop_in" type="text" v-model="accountData.accountDetailName"
-							placeholder="请输入账户名称" />
-					</uni-forms-item> 
-					<uni-forms-item label="金额" name="balance">
-						<uni-easyinput class="pop_in" prefixIcon="search" type="text" v-model="accountData.balance"
-							placeholder="请输入金额" />
-					</uni-forms-item>
-					<uni-forms-item label="备注" name="comment">
-						<uni-easyinput class="pop_in" type="text" v-model="accountData.comment" placeholder="请输入备注" />
-					</uni-forms-item>
-				</uni-forms>
-			</view>
-			<button @click="addpro()" type="primary">确认添加</button>
-		</uni-popup> -->
 		<bx-tabber></bx-tabber>
 	</view>
 </template>
@@ -103,47 +102,80 @@
 			return {
 				uid: 1,
 				selecValue: '',
-				budget: 114514,
-				left_budget: 14514,
+				budget: '',
+				left_budget: 200,
+				bookkeepingId: '1',
+				bookList: [],
+				bookPickerIndex: 0,
 				scheduleList: [],
+				updateBudget: {
+					bookkeepingId: '',
+					bookkeepingName: '',
+					bookkeepingCover: '',
+					budget: '',
+				},
 				info: {
 					progress: '',
 				},
 				date: '',
-				options: [{
-					value: '选项1',
-					label: '娱乐'
-				}, {
-					value: '选项2',
-					label: '日用'
-				}, {
-					value: '选项3',
-					label: '人情'
-				}, {
-					value: '选项4',
-					label: '伙食'
-				}],
 				c_date: {
 					selected: [{
 						date: '2023-04-03',
 						info: '-700',
 					}]
 				},
-				payList: [
-					{
-						icon: '../static/icon_p6208913rbe/youxi.png',
-						fundName: '游戏',
-						amount: '-100'
-					}
-				]
+				payList: [{
+					icon: '../static/icon_p6208913rbe/youxi.png',
+					fundName: '游戏',
+					amount: '-100'
+				}]
 			}
 		},
 		onShow() {
+			this.getBookList();
 			this.calucateProgress();
+			this.getBudget();
+			// this.init();
 		},
 		methods: {
-			calucateProgress() {
-				this.info.progress = this.budget / this.left_budget;
+			changeId(e) {
+				this.bookPickerIndex = e.detail.value;
+				this.bookkeepingId = this.bookList[this.bookPickerIndex].bookkeepingId;
+				this.updateBudget = this.bookList[this.bookPickerIndex];
+				this.init();
+			},
+			init() {
+				// this.getBookList();
+				this.calucateProgress();
+				this.getBudget();
+			},
+			getBookList() {
+				uni.$http.get('/book/getBookList?uid=' + this.uid).then(res => {
+					const myrange = [];
+					if (res.data.msg !== "成功")
+						return uni.$showMsg()
+					else {
+						this.bookList = res.data.data.data;
+						this.bookkeepingId = this.bookList[0].bookkeepingId;
+						this.updateBudget = this.bookList[0];
+					}
+					
+					// console.log(this.bookList[0].bookkeepingId)
+				})
+			},
+			async calucateProgress() {
+				await this.getBudget().then((res) => {
+					this.info.progress = this.left_budget / this.budget * 100;
+					// console.log(this.info.progress)
+				})
+			},
+			async getBudget() {
+				const {
+					data: res
+				} = await uni.$http.get('/book/getBudget?bookkeepingId=' + this.bookkeepingId)
+				if (res.msg !== "成功") return uni.$showMsg()
+				this.budget = res.data
+				// console.log(res.data)
 			},
 			checkSchedule() {
 				uni.$http.get('/schedule/getDayScheduleList?uid=' + this.uid + '&date=' + this.date).then(res => {
@@ -180,6 +212,31 @@
 				// return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
 				return year + "年" + month + "月" + day + "日" + hours + "时" + minutes + "分";
 			},
+			changeBudgetDialog() {
+				this.$refs.budgetDialog.open();
+				// Object.assign(this.updateBudget.budget,this.budget);
+				this.updateBudget.budget = this.budget;
+				console.log(this.updateBudget.budget)
+			},
+			changeBudgetConfirm() {
+				uni.$http.post('/book/updateBook', this.updateBudget).then(res => {
+					// console.log(res.data.msg);
+					if (res.data.msg === "成功") {
+						this.init();
+						return uni.showToast({
+							title: '修改成功！',
+							duration: 1500,
+							icon: 'none',
+						});
+					} else return uni.showToast({
+						title: '修改失败！',
+						duration: 1500,
+						icon: 'none',
+					})
+				})
+
+				this.$refs.budgetDialog.close()
+			},
 			selectitem(index, item) {
 				console.log(item)
 				if (index >= 0) {
@@ -193,10 +250,22 @@
 </script>
 
 <style>
+	.pickerView {
+		padding: 5px;
+		margin: 5%;
+		display: flex;
+		justify-content: flex-start;
+		background-color: #fff;
+		opacity: 0.9;
+		box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);
+		width: 40%;
+		font-size: 110%;
+	}
+
 	.divider {
-		width: 90%;
+		/* width: 100%; */
 		height: 1px;
-		margin: 3% 5%;
+		margin: 3% 0%;
 		background-color: #000000;
 		opacity: 0.5;
 	}
@@ -215,23 +284,26 @@
 
 	.list {
 		padding: 10px 20px;
-		background-color: rgba(242,243,245);
+		background-color: rgba(242, 243, 245);
 		/* opacity: 0.8; */
 		width: 300px;
 	}
-	.scheduleShow{
+
+	.scheduleShow {
 		/* width: 90%; */
 		background-color: #fff;
 		border-radius: 10%;
+		padding: 10px;
 		/* border: 1px solid #000000; */
 		/* box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2); */
 	}
+
 	.list .title {
 		font-size: 120%;
 		font-weight: bold;
 		margin-bottom: 3%;
 	}
-	
+
 	.navi {
 		background-color: #56DFC0;
 		box-shadow: 0 3px 8px rgba(0, 37, 204, 0.2);
@@ -277,21 +349,13 @@
 		width: 72px;
 	}
 
-	.divider {
-		width: 100%;
-		height: 1px;
-		margin: 5% 0% 0%;
-		background-color: #000000;
-		opacity: 0.3;
-	}
-
 	.strip {
 		/* 父元素相对定位 */
 		position: relative;
 		width: 360rpx;
 		height: 12rpx;
 		color: rgba(80, 80, 80, 1);
-		background-color: #F5F5F5;
+		background-color: #d1d2d4;
 		border-radius: 7rpx;
 		font-size: 28rpx;
 		line-height: 150%;

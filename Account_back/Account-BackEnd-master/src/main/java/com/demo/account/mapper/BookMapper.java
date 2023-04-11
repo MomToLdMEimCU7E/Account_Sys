@@ -118,7 +118,7 @@ public interface BookMapper {
     @Update("update bookkeeping set bookkeeping_cover = #{cover}, bookkeeping_name = #{name} where bookkeeping_id = #{id}")
     void updateBook(String cover, String name, Integer id);
 
-    @Insert("insert into bookkeeping set uid = #{uid}, set bookkeeping_type_id = #{typeId},  set bookkeeping_cover = #{cover}, set bookkeeping_name = #{name}, set customed_funds_id = #{fund}, set extra_member1 = #{m1}, set extra_member2 = #{m2}")
+    @Insert("insert into bookkeeping(uid, bookkeeping_type_id, bookkeeping_cover, bookkeeping_name) VALUES (#{uid}, #{typeId}, #{cover}, #{name})")
     void createBook(Integer uid, Integer typeId, String cover, String name, String fund, Integer m1, Integer m2);
 
     @Select("select * from basic_funds where fund_id = #{fundId}")
@@ -126,4 +126,7 @@ public interface BookMapper {
 
     @Select("select bookkeeping_type_funds_id from bookkeeping_tpye where bookkeeping_type_id = #{id}")
     String getFundIdString(Integer id);
+
+    @Delete("delete from bookkeeping where bookkeeping_id = #{id}")
+    Integer deleteBook(Integer id);
 }

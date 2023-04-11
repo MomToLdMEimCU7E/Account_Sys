@@ -701,11 +701,21 @@ public class BookServiceImpl implements BookService {
     public Result<?> getFundIcon(Integer bookkeepingTypeId) {
         String FundIdString = bookMapper.getFundIdString(bookkeepingTypeId);
         String[] id = FundIdString.split("-");
-        List<FundIconListVo> fundIconListVoList = new ArrayList<>();
+        List<FundIconListVo> fundIconListVoListIn = new ArrayList<>();
+        List<FundIconListVo> fundIconListVoListOut = new ArrayList<>();
+        List<List<FundIconListVo>> result = new ArrayList<>();
         for (int i = 0; i < id.length; i++) {
-            fundIconListVoList.add(bookMapper.getIcon(id[i]));
+            if(id[i].charAt(1) == 'I'){
+                fundIconListVoListIn.add(bookMapper.getIcon(id[i]));
+            } else if(id[i].charAt(1) == 'O'){
+                fundIconListVoListOut.add(bookMapper.getIcon(id[i]));
+            }
+
         }
-        return Result.success(fundIconListVoList);
+
+        result.add(fundIconListVoListIn);
+        result.add(fundIconListVoListOut);
+        return Result.success(result);
     }
 
     private HashMap<String,String> getPaymentType(int uid, String bookKeepingName, String type, String bookKeepingTypeName){
