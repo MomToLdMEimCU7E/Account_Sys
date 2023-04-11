@@ -2,6 +2,7 @@ package com.demo.account.mapper;
 
 import com.demo.account.Vo.BookListVo;
 import com.demo.account.Vo.FundIconListVo;
+import com.demo.account.Vo.MonthAmountVo;
 import com.demo.account.entity.BasicFund;
 import com.demo.account.entity.BookKeeping;
 import com.demo.account.entity.CustomFund;
@@ -118,8 +119,9 @@ public interface BookMapper {
     @Update("update bookkeeping set bookkeeping_cover = #{cover}, bookkeeping_name = #{name} where bookkeeping_id = #{id}")
     void updateBook(String cover, String name, Integer id);
 
+    //@Options(useGeneratedKeys = true, keyProperty = "bookkeepingId.id", keyColumn="bookkeeping_id")
     @Insert("insert into bookkeeping(uid, bookkeeping_type_id, bookkeeping_cover, bookkeeping_name) VALUES (#{uid}, #{typeId}, #{cover}, #{name})")
-    void createBook(Integer uid, Integer typeId, String cover, String name, String fund, Integer m1, Integer m2);
+    Integer createBook(Integer bookkeepingId, Integer uid, Integer typeId, String cover, String name, String fund, Integer m1, Integer m2);
 
     @Select("select * from basic_funds where fund_id = #{fundId}")
     FundIconListVo getIcon(String fundId);
@@ -129,4 +131,19 @@ public interface BookMapper {
 
     @Delete("delete from bookkeeping where bookkeeping_id = #{id}")
     Integer deleteBook(Integer id);
+
+    @Insert("INSERT INTO income(time, uid, bookkeeping_id, amount) SELECT adddate((DATE_FORMAT('2022-01-01', '%Y-%m-%d')), numlist.id) as `time`,#{uid},#{bookkeepingId}, 0 from (select n1.i + n10.i * 10 + n100.i * 100  AS id from num n1 CROSS JOIN num AS n10 CROSS JOIN num AS n100 ) as numlist")
+    Integer generateDate1(Integer uid, Integer bookkeepingId);
+
+    @Insert("INSERT INTO payment(time, uid, bookkeeping_id, amount) SELECT adddate((DATE_FORMAT('2022-01-01', '%Y-%m-%d')), numlist.id) as `time`,#{uid},#{bookkeepingId}, 0 from (select n1.i + n10.i * 10 + n100.i * 100  AS id from num n1 CROSS JOIN num AS n10 CROSS JOIN num AS n100 ) as numlist")
+    Integer generateDate2(Integer uid, Integer bookkeepingId);
+
+    @Select("select sum(amount) as sum, DATE_FORMAT(time,#{sql}) as date from income where bookkeeping_id = #{id} GROUP BY DATE_FORMAT(time,#{sql}) ORDER BY time desc ")
+    List<MonthAmountVo> getIncomeMonth(String sql, Integer id);
+
+    @Select("select sum(amount) as sum, DATE_FORMAT(time,#{sql}) as date from payment where bookkeeping_id = #{id} GROUP BY DATE_FORMAT(time,#{sql}) ORDER BY time desc ")
+    List<MonthAmountVo> getPayMonth(String sql, Integer id);
+
+    @Select("select fund_name from basic_funds where fund_id = #{fundId}")
+    String getFundName(String fundId);
 }

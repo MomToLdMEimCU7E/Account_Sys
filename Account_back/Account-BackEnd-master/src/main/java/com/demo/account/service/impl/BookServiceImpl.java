@@ -8,13 +8,13 @@ import com.demo.account.Po.InPo;
 import com.demo.account.Po.PayPo;
 import com.demo.account.Po.UpdateBookPo;
 import com.demo.account.Vo.FundIconListVo;
+import com.demo.account.Vo.IncomeVo;
+import com.demo.account.Vo.MonthAmountVo;
+import com.demo.account.Vo.PaymentVo;
 import com.demo.account.common.Result;
 import com.demo.account.entity.*;
 import com.demo.account.exception.BizException;
-import com.demo.account.mapper.BookMapper;
-import com.demo.account.mapper.Budget2Mapper;
-import com.demo.account.mapper.BudgetMapper;
-import com.demo.account.mapper.IncomePaymentMapper;
+import com.demo.account.mapper.*;
 import com.demo.account.service.BookService;
 import com.demo.account.utils.DateUtils;
 import org.springframework.stereotype.Service;
@@ -38,6 +38,12 @@ public class BookServiceImpl implements BookService {
 
     @Resource
     Budget2Mapper budget2Mapper;
+
+    @Resource
+    AccountDetailsMapper accountDetailsMapper;
+
+    @Resource
+    AccountDetailsTypeMapper accountDetailsTypeMapper;
 
     @Override
     public List<BasicFund> selectAllBasicFund() {
@@ -684,7 +690,10 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Result<?> createBook(CreateBookPo createBookPo) {
-        bookMapper.createBook(createBookPo.getUid(), createBookPo.getBookkeepingTypeId(), createBookPo.getBookkeepingCover(), createBookPo.getBookkeepingName(), createBookPo.getCustomedFundsId(), createBookPo.getExtraMember1(), createBookPo.getExtraMember2());
+        bookMapper.createBook(createBookPo.getBookkeepingId(), createBookPo.getUid(), createBookPo.getBookkeepingTypeId(), createBookPo.getBookkeepingCover(), createBookPo.getBookkeepingName(), createBookPo.getCustomedFundsId(), createBookPo.getExtraMember1(), createBookPo.getExtraMember2());
+        Integer bookId = bookMapper.selectBookkeepingId(createBookPo.getUid(), createBookPo.getBookkeepingName());
+        bookMapper.generateDate1(createBookPo.getUid(), bookId);
+        bookMapper.generateDate2(createBookPo.getUid(), bookId);
         return Result.success();
     }
 
@@ -716,6 +725,53 @@ public class BookServiceImpl implements BookService {
         result.add(fundIconListVoListIn);
         result.add(fundIconListVoListOut);
         return Result.success(result);
+    }
+
+    @Override
+    public Result<?> getMonthAmount(String year, String month, Integer bookkeepingId) {
+        String sql1 = "'2023-04-%d'";
+        String sql = "'" + year + "-" + month + "-%d'";
+        List<MonthAmountVo> income = bookMapper.getIncomeMonth(sql, bookkeepingId);
+        List<MonthAmountVo> pay = bookMapper.getIncomeMonth(sql, bookkeepingId);
+        List<MonthAmountVo> res = new ArrayList<>();
+        for (int i = 0; i < income.size(); i++) {
+            double sum = Double.parseDouble(income.get(i).getSum()) - Double.parseDouble(pay.get(i).getSum());
+            income.get(i).setSum(String.valueOf(sum));
+        }
+        for (int i = 10; i < income.size(); i++) {
+            res.add(income.get(i));
+        }
+        for (int i = 0; i < 10; i++) {
+            res.add(income.get(i));
+        }
+        Collections.reverse(res);
+        return Result.success(res);
+    }
+
+    @Override
+    public Result<?> getIncomeList(Integer bookkeepingId) {
+        List<Income> incomeList = incomePaymentMapper.getIncomeList(bookkeepingId);
+        List<IncomeVo> incomeVoList = new ArrayList<>();
+        for (int i = 0; i < incomeList.size(); i++) {
+            String fundName = bookMapper.getFundName(incomeList.get(i).getFundId());
+            String accountName = accountDetailsTypeMapper.getTypeName(accountDetailsMapper.getDetailTypeId(incomeList.get(i).getAccountDetailId()));
+            IncomeVo incomeVo = new IncomeVo(incomeList.get(i).getIncomeId(),incomeList.get(i).getUid(),incomeList.get(i).getBookkeepingId(),accountName,incomeList.get(i).getAccountDetailId(),incomeList.get(i).getAmount(),incomeList.get(i).getTime(),fundName,null,incomeList.get(i).getComment(),incomeList.get(i).getEnclosure());
+            incomeVoList.add(incomeVo);
+        }
+        return Result.success(incomeVoList);
+    }
+
+    @Override
+    public Result<?> getPaymentList(Integer bookkeepingId) {
+        List<Payment> paymentList = incomePaymentMapper.getPaymentList(bookkeepingId);
+        List<PaymentVo> paymentVoList = new ArrayList<>();
+        for (int i = 0; i < paymentList.size(); i++) {
+            String fundName = bookMapper.getFundName(paymentList.get(i).getFundId());
+            String accountName = accountDetailsTypeMapper.getTypeName(accountDetailsMapper.getDetailTypeId(paymentList.get(i).getAccountDetailId()));
+            PaymentVo paymentVo = new PaymentVo(paymentList.get(i).getPaymentId(),paymentList.get(i).getUid(),paymentList.get(i).getBookkeepingId(),accountName,paymentList.get(i).getAccountDetailId(),paymentList.get(i).getAmount(),paymentList.get(i).getTime(),fundName,paymentList.get(i).getCustomedFundId(),paymentList.get(i).getComment(),paymentList.get(i).getEnclosure());
+            paymentVoList.add(paymentVo);
+        }
+        return Result.success(paymentVoList);
     }
 
     private HashMap<String,String> getPaymentType(int uid, String bookKeepingName, String type, String bookKeepingTypeName){

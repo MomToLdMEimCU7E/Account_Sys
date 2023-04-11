@@ -353,4 +353,22 @@ public class BookController {
 
         return Result.success(bookMapper.deleteBook(bookkeepingId));
     }
+
+    @GetMapping("/getMonthAmount")
+    @ResponseBody
+    Result<?> getMonthAmount(@RequestParam String year, @RequestParam String month, @RequestParam Integer bookkeepingId){
+        return Result.success(bookService.getMonthAmount(year, month, bookkeepingId));
+    }
+
+    @GetMapping("/getIncomeList")
+    @ResponseBody
+    Result<?> getIncomeList(@RequestParam Integer bookkeepingId){
+        return Result.success(bookService.getIncomeList(bookkeepingId));
+    }
+
+    @GetMapping("/getPaymentList")
+    @ResponseBody
+    Result<?> getPaymentList(@RequestParam Integer bookkeepingId){
+        return Result.success(bookService.getPaymentList(bookkeepingId));
+    }
 }

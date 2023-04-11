@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class CreateBookPo {
+    private Integer bookkeepingId;
     private Integer uid;
     private Integer bookkeepingTypeId;
     private String bookkeepingCover;
@@ -12,6 +13,14 @@ public class CreateBookPo {
     private Integer extraMember1;
     private Integer extraMember2;
     private String budget;
+
+    public Integer getBookkeepingId() {
+        return bookkeepingId;
+    }
+
+    public void setBookkeepingId(Integer bookkeepingId) {
+        this.bookkeepingId = bookkeepingId;
+    }
 
     public String getBudget() {
         return budget;

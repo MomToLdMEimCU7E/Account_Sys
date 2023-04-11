@@ -56,5 +56,9 @@ public interface IncomePaymentMapper {
     @Select("select account_detail_type_name from account_details_type where account_detail_type_id = #{accountDetailTypeId}")
     String getAccountTypeName(Integer accountDetailTypeId);
 
+    @Select("select * from payment where bookkeeping_id = #{bookkeepingId} and amount != 0")
+    List<Payment> getPaymentList(Integer bookkeepingId);
 
+    @Select("select * from income where bookkeeping_id = #{bookkeepingId} and amount != 0")
+    List<Income> getIncomeList(Integer bookkeepingId);
 }

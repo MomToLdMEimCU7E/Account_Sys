@@ -76,4 +76,10 @@ public interface BookService {
     Result<?> detectBudget(Integer bookkeepingId);
 
     Result<?> getFundIcon(Integer bookkeepingTypeId);
+
+    Result<?> getMonthAmount(String year, String month, Integer bookkeepingId);
+
+    Result<?> getIncomeList(Integer bookkeepingId);
+
+    Result<?> getPaymentList(Integer bookkeepingId);
  }
