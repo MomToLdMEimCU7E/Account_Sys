@@ -149,9 +149,9 @@ public interface BookMapper {
 //    @Select("select sum(amount) from payment where time=STR_TO_DATE(#{sql},'%Y-%m') and (bookkeeping_id = #{id}) or (DATE_FORMAT(time,'%Y-%m-%d') = #{sql})" )
 //    String getMonthPayment(Date sql, Integer id);
 
-    @Select("select sum(amount) from payment where bookkeeping_id = #{id} and  DATE_FORMAT(time,'%Y-%m') = #{sql}" )
-    String getMonthPayment(Date sql, Integer id);
+    @Select("select sum(amount) from payment where bookkeeping_id = #{id} and time like #{sql}  " )
+    String getMonthPayment(String sql, Integer id);
 
-    @Select("select sum(amount) as sum,fund_id from income where time=STR_TO_DATE(#{sql},'%Y-%m') bookkeeping_id = #{id} and DATE_FORMAT(time,'%Y-%m') = #{sql} GROUP BY fund_id ORDER BY sum desc")
+    @Select("select sum(amount) as sum,fund_id from income where time = STR_TO_DATE(#{sql},'%Y-%m') bookkeeping_id = #{id} and DATE_FORMAT(time,'%Y-%m') = #{sql} GROUP BY fund_id ORDER BY sum desc")
     List<GetPaymentRankVo> getPaymentRank(String sql, Integer id);
 }

@@ -82,4 +82,6 @@ public interface BookService {
     Result<?> getIncomeList(Integer bookkeepingId);
 
     Result<?> getPaymentList(Integer bookkeepingId);
+
+    Result<?> getMonthPayment(Integer bookkeepingId, String year, String month);
  }

@@ -372,11 +372,11 @@ public class BookController {
         return Result.success(bookService.getMonthAmount(year, month, bookkeepingId));
     }
 
-    @GetMapping("/getIncomeList")
-    @ResponseBody
-    Result<?> getIncomeList(@RequestParam Integer bookkeepingId){
-        return Result.success(bookService.getIncomeList(bookkeepingId));
-    }
+//    @GetMapping("/getIncomeList")
+//    @ResponseBody
+//    Result<?> getIncomeList(@RequestParam Integer bookkeepingId){
+//        return Result.success(bookService.getIncomeList(bookkeepingId));
+//    }
 
     @GetMapping("/getPaymentList")
     @ResponseBody
@@ -408,33 +408,8 @@ public class BookController {
 
     @GetMapping("/getMonthPayment")
     @ResponseBody
-    Result<?> getMonthPayment(@RequestParam Integer bookkeepingId, @RequestParam String year, @RequestParam String month) throws ParseException {
-        String date = year + "-" + month;
-
-        java.text.SimpleDateFormat formatter = new SimpleDateFormat( "yyyy-MM");
-        Date date1 = formatter.parse(date);
-        String res = bookMapper.getMonthPayment(date1, bookkeepingId);
-
-        String Sdate = year + month + "-01 00:00:00";
-
-        if (month.equals("12")){
-            year = String.valueOf(Integer.parseInt(year) + 1);
-            month = "01";
-        } else {
-            month = String.valueOf(Integer.parseInt(month) + 1);
-        }
-
-        String Edate = year + month + "-01 00:00:00";
-
-        LambdaQueryWrapper<Payment> queryWrapper = new LambdaQueryWrapper<>();
-
-        queryWrapper.eq(Payment::getBookkeepingId, bookkeepingId);
-        queryWrapper.ge(Payment::getTime, Sdate);
-        queryWrapper.le(Payment::getTime, Edate);
-
-//        paymentMapper.selectList(queryWrapper);
-
-        return Result.success(paymentMapper.selectList(queryWrapper));
+    Result<?> getMonthPayment(@RequestParam Integer bookkeepingId, @RequestParam String year, @RequestParam String month){
+        return Result.success(bookService.getMonthPayment(bookkeepingId, year, month));
 
     }
 
