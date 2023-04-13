@@ -2,6 +2,7 @@ package com.demo.account.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.demo.account.Po.CreateBookPo;
 import com.demo.account.Po.InPo;
@@ -22,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -732,7 +735,7 @@ public class BookServiceImpl implements BookService {
 
         String sql = "'" + year + "-" + month + "-%d'";
         List<MonthAmountVo> income = bookMapper.getIncomeMonth(sql, bookkeepingId);
-        List<MonthAmountVo> pay = bookMapper.getIncomeMonth(sql, bookkeepingId);
+        List<MonthAmountVo> pay = bookMapper.getPayMonth(sql, bookkeepingId);
         List<MonthAmountVo> res = new ArrayList<>();
         for (int i = 0; i < income.size(); i++) {
             double sum = Double.parseDouble(income.get(i).getSum()) - Double.parseDouble(pay.get(i).getSum());
@@ -788,6 +791,41 @@ public class BookServiceImpl implements BookService {
         paymentVoList.sort((t1, t2) ->t2.getTime().compareTo(t1.getTime()));
 
         return Result.success(paymentVoList);
+    }
+
+    @Override
+    public Result<?> getMonthPayment(Integer bookkeepingId, String year, String month) {
+        String date = "'" + year + "-" + month + "%'";
+
+        java.text.SimpleDateFormat formatter = new SimpleDateFormat( "yyyy-MM");
+        Date date1 = null;
+        try {
+            date1 = formatter.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String res = bookMapper.getMonthPayment(date, bookkeepingId);
+
+//        String Sdate = year + month + "-01 00:00:00";
+//
+//        if (month.equals("12")){
+//            year = String.valueOf(Integer.parseInt(year) + 1);
+//            month = "01";
+//        } else {
+//            month = String.valueOf(Integer.parseInt(month) + 1);
+//        }
+//
+//        String Edate = year + month + "-01 00:00:00";
+//
+//        LambdaQueryWrapper<Payment> queryWrapper = new LambdaQueryWrapper<>();
+//
+//        queryWrapper.eq(Payment::getBookkeepingId, bookkeepingId);
+//        queryWrapper.ge(Payment::getTime, Sdate);
+//        queryWrapper.le(Payment::getTime, Edate);
+
+//        paymentMapper.selectList(queryWrapper);
+
+        return Result.success(res);
     }
 
     private HashMap<String,String> getPaymentType(int uid, String bookKeepingName, String type, String bookKeepingTypeName){
