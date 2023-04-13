@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    password: dhdyuiop6
+    password: 675665
     username: root
-    url: jdbc:mysql://localhost:3306/account?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false
+    url: jdbc:mysql://localhost:3306/account_dbs?serverTimezone=Asia/Shanghai&characterEncoding=utf8&useUnicode=true&useSSL=false
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
