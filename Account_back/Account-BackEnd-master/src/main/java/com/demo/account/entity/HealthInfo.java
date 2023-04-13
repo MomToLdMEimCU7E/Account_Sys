@@ -5,17 +5,16 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 @Data
-public class Health {
+public class HealthInfo {
     @TableId(type = IdType.AUTO)
     private Integer healthId;
     private Integer uid;
-    private String detail;
+    private String healthDetail;
     private String checkCategory;
-    private String person;
-    private Timestamp time;
+    private String testPerson;
+    private String testTime;
     private String enclosure;
 
     public Integer getHealthId() {
@@ -34,12 +33,12 @@ public class Health {
         this.uid = uid;
     }
 
-    public String getDetail() {
-        return detail;
+    public String getHealthDetail() {
+        return healthDetail;
     }
 
-    public void setDetail(String detail) {
-        this.detail = detail;
+    public void setHealthDetail(String healthDetail) {
+        this.healthDetail = healthDetail;
     }
 
     public String getCheckCategory() {
@@ -50,20 +49,20 @@ public class Health {
         this.checkCategory = checkCategory;
     }
 
-    public String getPerson() {
-        return person;
+    public String getTestPerson() {
+        return testPerson;
     }
 
-    public void setPerson(String person) {
-        this.person = person;
+    public void setTestPerson(String testPerson) {
+        this.testPerson = testPerson;
     }
 
-    public Timestamp getTime() {
-        return time;
+    public String getTestTime() {
+        return testTime;
     }
 
-    public void setTime(Timestamp time) {
-        this.time = time;
+    public void setTestTime(String testTime) {
+        this.testTime = testTime;
     }
 
     public String getEnclosure() {

@@ -1,11 +1,11 @@
 package com.demo.account.service;
 
 import com.demo.account.common.Result;
-import com.demo.account.entity.Health;
+import com.demo.account.entity.HealthInfo;
 
 public interface HealthService {
-    Result<?> createHealth(Health health);
-    Result<?> updateHealth(Health health);
+    Result<?> createHealth(HealthInfo healthInfo);
+    Result<?> updateHealth(HealthInfo healthInfo);
     Result<?> deleteHealth(Integer healthId);
     Result<?> getHealth(Integer healthId);
     Result<?> getHealthList(Integer uid);

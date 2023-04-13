@@ -1,7 +1,7 @@
 package com.demo.account.service.impl;
 
 import com.demo.account.common.Result;
-import com.demo.account.entity.Health;
+import com.demo.account.entity.HealthInfo;
 import com.demo.account.mapper.HealthMapper;
 import com.demo.account.service.HealthService;
 import org.springframework.stereotype.Service;
@@ -14,14 +14,14 @@ public class HealthServiceImpl implements HealthService {
     HealthMapper healthMapper;
 
     @Override
-    public Result<?> createHealth(Health health) {
-        //return Result.success(healthMapper.insert(health));
-        return Result.success(healthMapper.insertHealth(health.getUid(),health.getDetail(),health.getCheckCategory(),health.getPerson(),health.getTime(),health.getEnclosure()));
+    public Result<?> createHealth(HealthInfo healthInfo) {
+        return Result.success(healthMapper.insert(healthInfo));
+        //return Result.success(healthMapper.insertHealth(healthInfo.getUid(), healthInfo.getDetail(), healthInfo.getCheckCategory(), healthInfo.getPerson(), healthInfo.getTestTime(), healthInfo.getEnclosure()));
     }
 
     @Override
-    public Result<?> updateHealth(Health health) {
-        return Result.success(healthMapper.updateById(health));
+    public Result<?> updateHealth(HealthInfo healthInfo) {
+        return Result.success(healthMapper.updateById(healthInfo));
     }
 
     @Override

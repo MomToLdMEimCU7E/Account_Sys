@@ -68,8 +68,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Result<?> UpdateAccountDetail(AccountDetails accountDetails, Integer accountDetailId) {
-        accountDetailsMapper.update(accountDetails, Wrappers.<AccountDetails>lambdaQuery().eq(AccountDetails::getAccountDetailId, accountDetailId));
+    public Result<?> UpdateAccountDetail(AccountDetails accountDetails) {
+        accountDetailsMapper.updateById(accountDetails);
+
+        //accountDetailsMapper.update(accountDetails, Wrappers.<AccountDetails>lambdaQuery().eq(AccountDetails::getAccountDetailId, accountDetailId));
         return Result.success();
     }
 

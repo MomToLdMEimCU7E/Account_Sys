@@ -11,7 +11,7 @@
  Target Server Version : 80028
  File Encoding         : 65001
 
- Date: 13/04/2023 17:01:38
+ Date: 13/04/2023 22:02:21
 */
 
 SET NAMES utf8mb4;
@@ -57,7 +57,8 @@ INSERT INTO `account_details` VALUES (2, 1, 3222, 1, '50', '5', '无');
 INSERT INTO `account_details` VALUES (3, 4, 777, 1, '20', '23', '你好');
 INSERT INTO `account_details` VALUES (5, 3, NULL, 1, '200', NULL, 'test');
 INSERT INTO `account_details` VALUES (6, 6, NULL, 1, '123', NULL, '');
-INSERT INTO `account_details` VALUES (7, 1, NULL, 1, '500', NULL, 'test');
+INSERT INTO `account_details` VALUES (7, 1, NULL, 1, '114514', NULL, 'test2');
+INSERT INTO `account_details` VALUES (9, 1, NULL, 1, '500', NULL, 'test');
 
 -- ----------------------------
 -- Table structure for account_details_type
@@ -10306,6 +10307,38 @@ INSERT INTO `customed_funds` VALUES ('CI20356aedd41f11ed8ca2002b67dd5ef6', 2, '�
 INSERT INTO `customed_funds` VALUES ('CI2035a928d41f11ed8ca2002b67dd5ef6', 2, '股票', 6);
 INSERT INTO `customed_funds` VALUES ('CO6b4ac9e0d42511ed8ca2002b67dd5ef6', 2, '虾米', 6);
 INSERT INTO `customed_funds` VALUES ('CO6b4c94e3d42511ed8ca2002b67dd5ef6', 2, '鱼', 6);
+
+-- ----------------------------
+-- Table structure for health_info
+-- ----------------------------
+DROP TABLE IF EXISTS `health_info`;
+CREATE TABLE `health_info`  (
+  `health_id` int NOT NULL AUTO_INCREMENT,
+  `uid` int NULL DEFAULT NULL,
+  `health_detail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `check_category` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `test_person` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '就诊人',
+  `test_time` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `enclosure` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`health_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of health_info
+-- ----------------------------
+INSERT INTO `health_info` VALUES (1, 1, '1', '1', '1', '2023-04-13 00:00:00', '1');
+INSERT INTO `health_info` VALUES (2, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `health_info` VALUES (3, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `health_info` VALUES (4, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `health_info` VALUES (5, 1, 'test', 'test', 'test', '2023-04-13 00:00:00', 'test');
+INSERT INTO `health_info` VALUES (6, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `health_info` VALUES (7, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `health_info` VALUES (8, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `health_info` VALUES (9, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `health_info` VALUES (10, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `health_info` VALUES (11, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `health_info` VALUES (12, 1, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `health_info` VALUES (13, 1, 'test', '1', '1', '2023-04-13', NULL);
 
 -- ----------------------------
 -- Table structure for income

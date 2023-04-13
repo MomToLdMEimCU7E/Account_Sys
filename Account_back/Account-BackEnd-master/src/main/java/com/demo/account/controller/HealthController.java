@@ -1,9 +1,8 @@
 package com.demo.account.controller;
 
 import com.demo.account.common.Result;
-import com.demo.account.entity.Health;
+import com.demo.account.entity.HealthInfo;
 import com.demo.account.service.HealthService;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -16,19 +15,19 @@ public class HealthController {
 
     @PostMapping("/createHealth")
     @ResponseBody
-    Result<?> createHealth(Health health){
-        return Result.success(healthService.createHealth(health));
+    Result<?> createHealth(@RequestBody HealthInfo healthInfo){
+        return Result.success(healthService.createHealth(healthInfo));
     }
 
     @PutMapping("/updateHealth")
     @ResponseBody
-    Result<?> updateHealth(Health health){
-        return Result.success(healthService.updateHealth(health));
+    Result<?> updateHealth(@RequestBody HealthInfo healthInfo){
+        return Result.success(healthService.updateHealth(healthInfo));
     }
 
     @DeleteMapping("/deleteHealth")
     @ResponseBody
-    Result<?> deleteHealth(Integer healthId){
+    Result<?> deleteHealth(@RequestParam Integer healthId){
         return Result.success(healthService.deleteHealth(healthId));
     }
 

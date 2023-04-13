@@ -59,8 +59,8 @@ public class AccountController {
     @PutMapping("/updateAccountDetail")
     @ApiOperation("修改账户内容")
     @ResponseBody
-    public Result<?> updateAccountDetail(@RequestBody AccountDetails accountDetails, @RequestParam Integer accountDetailsId){
-        accountService.UpdateAccountDetail(accountDetails,accountDetailsId);
+    public Result<?> updateAccountDetail(@RequestBody AccountDetails accountDetails){
+        accountService.UpdateAccountDetail(accountDetails);
 
         return Result.success();
     }
