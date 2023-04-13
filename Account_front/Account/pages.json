@@ -102,6 +102,15 @@
                 }
                 
                 }
+                ,{
+                    "path" : "billdetail/billdetail",
+                    "style" :                                                                                    
+                {
+                    "navigationBarTitleText": "",
+                    "enablePullDownRefresh": false
+                }
+                
+                }
             ]
 	}],
 	"globalStyle": {

@@ -1,16 +1,17 @@
 package com.demo.account.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.demo.account.Po.CreateBookPo;
 import com.demo.account.Po.InPo;
 import com.demo.account.Po.PayPo;
 import com.demo.account.Po.UpdateBookPo;
+import com.demo.account.Vo.GetPaymentRankVo;
 import com.demo.account.common.Result;
-import com.demo.account.entity.BasicFund;
-import com.demo.account.entity.BookKeeping;
+import com.demo.account.entity.*;
 import com.demo.account.exception.BizException;
 import com.demo.account.exception.ResultBody;
-import com.demo.account.mapper.BookMapper;
+import com.demo.account.mapper.*;
 import com.demo.account.service.BookService;
 import com.demo.account.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +36,14 @@ public class BookController {
     }
     @Resource
     BookMapper bookMapper;
+    @Resource
+    AccountDetailsMapper accountDetailsMapper;
+    @Resource
+    IncomeMapper incomeMapper;
+    @Resource
+    PaymentMapper paymentMapper;
+    @Resource
+    IncomePaymentMapper incomePaymentMapper;
 
     /**
      * @param uid 用户id
@@ -115,11 +125,12 @@ public class BookController {
      * 功能：添加一笔支出
      */
     @RequestMapping(method = RequestMethod.POST,value = "/out")
-    ResultBody bookkeepingPayment(@RequestBody PayPo payPo){
+    ResultBody bookkeepingPayment(PayPo payPo){
 
         bookService.bookkeepingPayment(payPo);
         return ResultBody.success("添加成功");
     }
+
 
     /**
      *
@@ -127,11 +138,12 @@ public class BookController {
      * 功能：添加一笔收入
      */
     @RequestMapping(method = RequestMethod.POST,value = "/in")
-    ResultBody bookkeepingIncome(@RequestBody InPo inPo){
+    ResultBody bookkeepingIncome(InPo inPo){
 
         bookService.bookkeepingIncome(inPo);
         return ResultBody.success("添加成功");
     }
+
 
     /**
      * @return "success"
@@ -370,5 +382,91 @@ public class BookController {
     @ResponseBody
     Result<?> getPaymentList(@RequestParam Integer bookkeepingId){
         return Result.success(bookService.getPaymentList(bookkeepingId));
+    }
+
+    @PostMapping("/createIncome")
+    @ResponseBody
+    Result<?> createIncome(@RequestBody Income income){
+        if (income.getAccountDetailId() != null){
+            AccountDetails accountDetails = accountDetailsMapper.getAccountDetails(income.getAccountDetailId());
+            accountDetails.setBalance(String.valueOf(Double.parseDouble(accountDetails.getBalance()) + Double.parseDouble(income.getAmount())));
+        }
+
+        return Result.success(incomeMapper.insert(income));
+    }
+
+    @PostMapping("/createPayment")
+    @ResponseBody
+    Result<?> createPayment(@RequestBody Payment payment){
+        if (payment.getAccountDetailId() != null){
+            AccountDetails accountDetails = accountDetailsMapper.getAccountDetails(payment.getAccountDetailId());
+            accountDetails.setBalance(String.valueOf(Double.parseDouble(accountDetails.getBalance()) - Double.parseDouble(payment.getAmount())));
+        }
+
+        return Result.success(paymentMapper.insert(payment));
+    }
+
+    @GetMapping("/getMonthPayment")
+    @ResponseBody
+    Result<?> getMonthPayment(@RequestParam Integer bookkeepingId, @RequestParam String year, @RequestParam String month) throws ParseException {
+        String date = year + "-" + month;
+
+        java.text.SimpleDateFormat formatter = new SimpleDateFormat( "yyyy-MM");
+        Date date1 = formatter.parse(date);
+        String res = bookMapper.getMonthPayment(date1, bookkeepingId);
+
+        String Sdate = year + month + "-01 00:00:00";
+
+        if (month.equals("12")){
+            year = String.valueOf(Integer.parseInt(year) + 1);
+            month = "01";
+        } else {
+            month = String.valueOf(Integer.parseInt(month) + 1);
+        }
+
+        String Edate = year + month + "-01 00:00:00";
+
+        LambdaQueryWrapper<Payment> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(Payment::getBookkeepingId, bookkeepingId);
+        queryWrapper.ge(Payment::getTime, Sdate);
+        queryWrapper.le(Payment::getTime, Edate);
+
+//        paymentMapper.selectList(queryWrapper);
+
+        return Result.success(paymentMapper.selectList(queryWrapper));
+
+    }
+
+    @GetMapping("/getPaymentRank")
+    @ResponseBody
+    Result<?> getPaymentRank(@RequestParam Integer bookkeepingId, @RequestParam String year, @RequestParam String month){
+        String sql = "'" + year + "-" + month + "'";
+        List<GetPaymentRankVo> getPaymentRankVoList = bookMapper.getPaymentRank(sql,bookkeepingId);
+
+        //getPaymentRankVoList.remove(getPaymentRankVoList.size() - 1);
+        for (int i = 0; i < getPaymentRankVoList.size(); i++) {
+            getPaymentRankVoList.get(i).setFundName(bookMapper.getFundName(getPaymentRankVoList.get(i).getFundName()));
+        }
+        return Result.success(getPaymentRankVoList);
+    }
+
+    @GetMapping("/getFundPaymentList")
+    @ResponseBody
+    Result<?> getFundPaymentList(@RequestParam Integer bookkeepingId, @RequestParam String fundId){
+        char type = fundId.charAt(1);
+
+        if(type == 'I'){
+            return Result.success(incomePaymentMapper.getFundIncomeList(bookkeepingId, fundId));
+        } else if (type == 'O'){
+            return Result.success(incomePaymentMapper.getFundPaymentList(bookkeepingId, fundId));
+        }else return Result.error("01", "查询失败");
+
+//        switch (type){
+//            case 'I':return Result.success(incomePaymentMapper.getFundIncomeList(bookkeepingId, fundId));break;
+//            case 'O':return Result.success(incomePaymentMapper.getFundPaymentList(bookkeepingId, fundId));break;
+//            default:return Result.error("01", "查询失败");
+//        }
+
     }
 }

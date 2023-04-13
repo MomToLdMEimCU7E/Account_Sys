@@ -44,11 +44,11 @@ public class Payment {
         this.bookkeepingId = bookkeepingId;
     }
 
-    public int getAccountDetailId() {
+    public Integer getAccountDetailId() {
         return accountDetailId;
     }
 
-    public void setAccountDetailId(int accountDetailId) {
+    public void setAccountDetailId(Integer accountDetailId) {
         this.accountDetailId = accountDetailId;
     }
 

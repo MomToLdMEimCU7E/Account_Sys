@@ -8,8 +8,13 @@
 					<uni-icons type="compose" size="30" color="#15D8AC"></uni-icons>
 					<view class="title">{{item.bookkeepingName}}</view>
 				</view>
-				<view class="button" @click="GoToprodetail(index)">
-					编辑账本
+				<view class="buttonarea">
+						<!-- <view class="d_button">
+							删除账本
+						</view> -->
+					<view class="u_button" @click="GoToprodetail(index)">
+						编辑账本
+					</view>
 				</view>
 			</view>
 			<view class="navi" @click="openAddbookDialog()">
@@ -24,8 +29,8 @@
 							<uni-easyinput v-model="bookData.bookkeepingName" placeholder="请输入账本名称"></uni-easyinput>
 						</uni-forms-item>
 						<uni-forms-item label="类型" required>
-							<uni-data-select v-model="bookData.bookkeepingTypeId" :localdata="bookkeepingType" @change="changebookkeepingTypeId"
-								placeholder="请选择账本类型"></uni-data-select>
+							<uni-data-select v-model="bookData.bookkeepingTypeId" :localdata="bookkeepingType"
+								@change="changebookkeepingTypeId" placeholder="请选择账本类型"></uni-data-select>
 						</uni-forms-item>
 					</uni-forms>
 				</view>
@@ -82,30 +87,28 @@
 			openAddbookDialog() {
 				this.$refs.AddbookDialog.open();
 			},
-			changebookkeepingTypeId(e){
-				this.bookData.bookkeepingTypeId =  e;
+			changebookkeepingTypeId(e) {
+				this.bookData.bookkeepingTypeId = e;
 			},
-			addBookConfirm(){
+			addBookConfirm() {
 				this.bookData.uid = 1;
 				this.bookData.bookkeepingCover = 'daily';
 				uni.$http.post('/book/createBook', this.bookData).then(res => {
-					if (res.data.msg === "成功"){
+					if (res.data.msg === "成功") {
 						this.getBookList();
 						return uni.showToast({
 							title: '添加成功！',
 							duration: 1500,
 							icon: 'none',
 						});
-						
-					}
-						
-					else return uni.showToast({
+
+					} else return uni.showToast({
 						title: '添加失败！',
 						duration: 1500,
 						icon: 'none',
 					})
 				})
-				
+
 				this.$refs.AddbookDialog.close()
 			}
 		}
@@ -136,18 +139,35 @@
 		width: 120px;
 	}
 
-	.bookShow .button {
-		background-color: #56DFC0;
-		border-radius: 5%;
-		box-shadow: 0 3px 8px #cac6;
+	.bookShow .buttonarea {
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		align-self: flex-end;
-		height: 32px;
-		margin: 0%;
-		opacity: 0.9;
-		width: 72px;
+
+	}
+
+	.bookShow .d_button {
+		background-color: #E64340;
+		border-radius: 5%;
+		box-shadow: 0 3px 8px #cac6;
+		margin-right: 3%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 50upx;
+	}
+
+	.bookShow .u_button {
+		background-color: #56DFC0;
+		border-radius: 5%;
+		box-shadow: 0 3px 8px #cac6;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 50upx;
 	}
 
 	.navi {

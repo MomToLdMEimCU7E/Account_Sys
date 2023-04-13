@@ -59,6 +59,12 @@ public interface IncomePaymentMapper {
     @Select("select * from payment where bookkeeping_id = #{bookkeepingId} and amount != 0")
     List<Payment> getPaymentList(Integer bookkeepingId);
 
-    @Select("select * from income where bookkeeping_id = #{bookkeepingId} and amount != 0")
-    List<Income> getIncomeList(Integer bookkeepingId);
+    @Select("select income_id as payment_id, uid, bookkeeping_id,  account_detail_id, amount, time, fund_id, customed_fund_id, comment, enclosure from income where bookkeeping_id = #{bookkeepingId} and amount != 0")
+    List<Payment> getIncomeList(Integer bookkeepingId);
+
+    @Select("select * from income where bookkeeping_id = #{id} and fund_id = #{fundId}")
+    List<Income> getFundIncomeList(Integer id, String fundId);
+
+    @Select("select * from payment where bookkeeping_id = #{id} and fund_id = #{fundId}")
+    List<Payment> getFundPaymentList(Integer id, String fundId);
 }

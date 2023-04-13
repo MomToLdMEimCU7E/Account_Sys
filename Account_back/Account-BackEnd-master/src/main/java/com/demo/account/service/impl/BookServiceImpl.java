@@ -729,7 +729,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Result<?> getMonthAmount(String year, String month, Integer bookkeepingId) {
-        String sql1 = "'2023-04-%d'";
+
         String sql = "'" + year + "-" + month + "-%d'";
         List<MonthAmountVo> income = bookMapper.getIncomeMonth(sql, bookkeepingId);
         List<MonthAmountVo> pay = bookMapper.getIncomeMonth(sql, bookkeepingId);
@@ -750,15 +750,16 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Result<?> getIncomeList(Integer bookkeepingId) {
-        List<Income> incomeList = incomePaymentMapper.getIncomeList(bookkeepingId);
-        List<IncomeVo> incomeVoList = new ArrayList<>();
-        for (int i = 0; i < incomeList.size(); i++) {
-            String fundName = bookMapper.getFundName(incomeList.get(i).getFundId());
-            String accountName = accountDetailsTypeMapper.getTypeName(accountDetailsMapper.getDetailTypeId(incomeList.get(i).getAccountDetailId()));
-            IncomeVo incomeVo = new IncomeVo(incomeList.get(i).getIncomeId(),incomeList.get(i).getUid(),incomeList.get(i).getBookkeepingId(),accountName,incomeList.get(i).getAccountDetailId(),incomeList.get(i).getAmount(),incomeList.get(i).getTime(),fundName,null,incomeList.get(i).getComment(),incomeList.get(i).getEnclosure());
-            incomeVoList.add(incomeVo);
-        }
-        return Result.success(incomeVoList);
+//        List<Payment> incomeList = incomePaymentMapper.getIncomeList(bookkeepingId);
+//        List<IncomeVo> incomeVoList = new ArrayList<>();
+//        for (int i = 0; i < incomeList.size(); i++) {
+//            String fundName = bookMapper.getFundName(incomeList.get(i).getFundId());
+//            String accountName = accountDetailsTypeMapper.getTypeName(accountDetailsMapper.getDetailTypeId(incomeList.get(i).getAccountDetailId()));
+//            IncomeVo incomeVo = new IncomeVo(incomeList.get(i).getIncomeId(),incomeList.get(i).getUid(),incomeList.get(i).getBookkeepingId(),accountName,incomeList.get(i).getAccountDetailId(),incomeList.get(i).getAmount(),incomeList.get(i).getTime(),fundName,null,incomeList.get(i).getComment(),incomeList.get(i).getEnclosure());
+//            incomeVoList.add(incomeVo);
+//        }
+//        return Result.success(incomeVoList);
+        return null;
     }
 
     @Override
@@ -768,9 +769,24 @@ public class BookServiceImpl implements BookService {
         for (int i = 0; i < paymentList.size(); i++) {
             String fundName = bookMapper.getFundName(paymentList.get(i).getFundId());
             String accountName = accountDetailsTypeMapper.getTypeName(accountDetailsMapper.getDetailTypeId(paymentList.get(i).getAccountDetailId()));
-            PaymentVo paymentVo = new PaymentVo(paymentList.get(i).getPaymentId(),paymentList.get(i).getUid(),paymentList.get(i).getBookkeepingId(),accountName,paymentList.get(i).getAccountDetailId(),paymentList.get(i).getAmount(),paymentList.get(i).getTime(),fundName,paymentList.get(i).getCustomedFundId(),paymentList.get(i).getComment(),paymentList.get(i).getEnclosure());
+            String amount = "-" + paymentList.get(i).getAmount();
+            PaymentVo paymentVo = new PaymentVo(paymentList.get(i).getPaymentId(),paymentList.get(i).getUid(),paymentList.get(i).getBookkeepingId(),accountName,paymentList.get(i).getAccountDetailId(),amount,paymentList.get(i).getTime(),fundName,paymentList.get(i).getCustomedFundId(),paymentList.get(i).getComment(),paymentList.get(i).getEnclosure());
             paymentVoList.add(paymentVo);
         }
+
+        List<Payment> incomeList = incomePaymentMapper.getIncomeList(bookkeepingId);
+        List<PaymentVo> incomeVoList = new ArrayList<>();
+        for (int i = 0; i < incomeList.size(); i++) {
+            String fundName = bookMapper.getFundName(incomeList.get(i).getFundId());
+            String accountName = accountDetailsTypeMapper.getTypeName(accountDetailsMapper.getDetailTypeId(incomeList.get(i).getAccountDetailId()));
+            PaymentVo paymentVo = new PaymentVo(incomeList.get(i).getPaymentId(),incomeList.get(i).getUid(),incomeList.get(i).getBookkeepingId(),accountName,incomeList.get(i).getAccountDetailId(),incomeList.get(i).getAmount(),incomeList.get(i).getTime(),fundName,null,incomeList.get(i).getComment(),incomeList.get(i).getEnclosure());
+            incomeVoList.add(paymentVo);
+        }
+
+        paymentVoList.addAll(incomeVoList);
+
+        paymentVoList.sort((t1, t2) ->t2.getTime().compareTo(t1.getTime()));
+
         return Result.success(paymentVoList);
     }
 

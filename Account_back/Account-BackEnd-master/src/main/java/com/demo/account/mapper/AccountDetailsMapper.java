@@ -22,5 +22,6 @@ public interface AccountDetailsMapper extends BaseMapper<AccountDetails> {
     @Select("select account_detail_Type_id from account_details where account_detail_id = #{accountDetailId}")
     Integer getDetailTypeId(Integer accountDetailId);
 
-
+    @Select("select * from account_details where account_detail_id = #{accountDetailId}")
+    AccountDetails getAccountDetails(Integer accountDetailId);
 }

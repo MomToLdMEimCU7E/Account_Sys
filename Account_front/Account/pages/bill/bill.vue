@@ -57,8 +57,13 @@
 			<view class="bill_list" v-for="(item,index) in payList" :key="index">
 				<view class="bill_card" @click="GoToprodetail(index)">
 					<img class="bill_img" :src="item.icon" mode="widthFix">
-					<view class="bill_name">
-						{{item.fundName}}
+					<view class="">
+						<view class="bill_name">
+							{{item.fundName}}
+						</view>
+						<view class="">
+							{{item.time}}
+						</view>
 					</view>
 					<view class="bill_amount">
 						￥{{item.amount}}
@@ -127,8 +132,20 @@
 				payList: [{
 					icon: '../static/icon_p6208913rbe/youxi.png',
 					fundName: '游戏',
-					amount: '-100'
-				}]
+					amount: '-100',
+					time: '2023-04-11',
+					comment: 'test',
+					accountDetailName: '储蓄卡'
+				},
+				{
+					icon: '../static/icon_p6208913rbe/youxi.png',
+					fundName: '游戏',
+					amount: '100',
+					time: '2023-04-11',
+					comment: 'test',
+					accountDetailName: '储蓄卡'
+				}
+				]
 			}
 		},
 		onShow() {
@@ -138,6 +155,12 @@
 			// this.init();
 		},
 		methods: {
+			GoToprodetail(index) {
+				let item = encodeURIComponent(JSON.stringify(this.payList[index]))
+				uni.navigateTo({
+					url: '/subpkg/billdetail/billdetail?item=' + item
+				})
+			},
 			changeId(e) {
 				this.bookPickerIndex = e.detail.value;
 				this.bookkeepingId = this.bookList[this.bookPickerIndex].bookkeepingId;
@@ -148,6 +171,7 @@
 				// this.getBookList();
 				this.calucateProgress();
 				this.getBudget();
+				this.getPaymentList();
 			},
 			getBookList() {
 				uni.$http.get('/book/getBookList?uid=' + this.uid).then(res => {
@@ -158,6 +182,18 @@
 						this.bookList = res.data.data.data;
 						this.bookkeepingId = this.bookList[0].bookkeepingId;
 						this.updateBudget = this.bookList[0];
+					}
+					
+					// console.log(this.bookList[0].bookkeepingId)
+				})
+			},
+			getPaymentList(){
+				uni.$http.get('/book/getPaymentList?bookkeepingId=' + this.bookkeepingId).then(res => {
+					const myrange = [];
+					if (res.data.msg !== "成功")
+						return uni.$showMsg()
+					else {
+						this.payList = res.data.data.data;
 					}
 					
 					// console.log(this.bookList[0].bookkeepingId)
@@ -399,7 +435,7 @@
 	}
 
 	.bill_card .bill_name {
-		width: 30%;
+		/* width: 30%; */
 		font-size: 120%;
 	}
 

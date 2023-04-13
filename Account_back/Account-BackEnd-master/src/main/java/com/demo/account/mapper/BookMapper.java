@@ -1,8 +1,6 @@
 package com.demo.account.mapper;
 
-import com.demo.account.Vo.BookListVo;
-import com.demo.account.Vo.FundIconListVo;
-import com.demo.account.Vo.MonthAmountVo;
+import com.demo.account.Vo.*;
 import com.demo.account.entity.BasicFund;
 import com.demo.account.entity.BookKeeping;
 import com.demo.account.entity.CustomFund;
@@ -10,6 +8,7 @@ import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.mapping.StatementType;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 public interface BookMapper {
@@ -146,4 +145,13 @@ public interface BookMapper {
 
     @Select("select fund_name from basic_funds where fund_id = #{fundId}")
     String getFundName(String fundId);
+
+//    @Select("select sum(amount) from payment where time=STR_TO_DATE(#{sql},'%Y-%m') and (bookkeeping_id = #{id}) or (DATE_FORMAT(time,'%Y-%m-%d') = #{sql})" )
+//    String getMonthPayment(Date sql, Integer id);
+
+    @Select("select sum(amount) from payment where bookkeeping_id = #{id} and  DATE_FORMAT(time,'%Y-%m') = #{sql}" )
+    String getMonthPayment(Date sql, Integer id);
+
+    @Select("select sum(amount) as sum,fund_id from income where time=STR_TO_DATE(#{sql},'%Y-%m') bookkeeping_id = #{id} and DATE_FORMAT(time,'%Y-%m') = #{sql} GROUP BY fund_id ORDER BY sum desc")
+    List<GetPaymentRankVo> getPaymentRank(String sql, Integer id);
 }
