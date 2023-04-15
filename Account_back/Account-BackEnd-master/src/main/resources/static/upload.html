@@ -5,7 +5,12 @@
     <title>Title</title>
 </head>
 <body>
-<form action="/health/upload" method="post" enctype="multipart/form-data">
+<form action="/book/train" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" value="upload">
+    <input type="submit" value="上传">
+</form>
+<br>
+<form action="/book/receipt" method="post" enctype="multipart/form-data">
     <input type="file" name="file" value="upload">
     <input type="submit" value="上传">
 </form>

@@ -20,27 +20,27 @@ public class Income {
     private String comment;
     private String enclosure;
 
-    public int getIncomeId() {
+    public Integer getIncomeId() {
         return incomeId;
     }
 
-    public void setIncomeId(int incomeId) {
+    public void setIncomeId(Integer incomeId) {
         this.incomeId = incomeId;
     }
 
-    public int getUid() {
+    public Integer getUid() {
         return uid;
     }
 
-    public void setUid(int uid) {
+    public void setUid(Integer uid) {
         this.uid = uid;
     }
 
-    public int getBookkeepingId() {
+    public Integer getBookkeepingId() {
         return bookkeepingId;
     }
 
-    public void setBookkeepingId(int bookkeepingId) {
+    public void setBookkeepingId(Integer bookkeepingId) {
         this.bookkeepingId = bookkeepingId;
     }
 

@@ -17,8 +17,9 @@ public class PaymentVo {
     private String customedFundId;
     private String comment;
     private String enclosure;
+    private String icon;
 
-    public PaymentVo(Integer paymentId, Integer uid, Integer bookkeepingId, String accountDetailName, Integer accountDetailId, String amount, Timestamp time, String fundId, String customedFundId, String comment, String enclosure) {
+    public PaymentVo(Integer paymentId, Integer uid, Integer bookkeepingId, String accountDetailName, Integer accountDetailId, String amount, Timestamp time, String fundId, String customedFundId, String comment, String enclosure, String icon) {
         this.paymentId = paymentId;
         this.uid = uid;
         this.bookkeepingId = bookkeepingId;
@@ -30,7 +31,10 @@ public class PaymentVo {
         this.customedFundId = customedFundId;
         this.comment = comment;
         this.enclosure = enclosure;
+        this.icon = icon;
     }
+
+
 
     public Integer getAccountDetailId() {
         return accountDetailId;

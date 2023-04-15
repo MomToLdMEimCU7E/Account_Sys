@@ -125,6 +125,9 @@ public interface BookMapper {
     @Select("select * from basic_funds where fund_id = #{fundId}")
     FundIconListVo getIcon(String fundId);
 
+    @Select("select icon from basic_funds where fund_id = #{fundId}")
+    String getFundIcon(String fundId);
+
     @Select("select bookkeeping_type_funds_id from bookkeeping_tpye where bookkeeping_type_id = #{id}")
     String getFundIdString(Integer id);
 

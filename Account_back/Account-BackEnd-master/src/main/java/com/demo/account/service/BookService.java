@@ -84,4 +84,6 @@ public interface BookService {
     Result<?> getPaymentList(Integer bookkeepingId);
 
     Result<?> getMonthPayment(Integer bookkeepingId, String year, String month);
+
+    String discern(String type);
  }

@@ -20,27 +20,27 @@ public class Payment {
     private String comment;
     private String enclosure;
 
-    public int getPaymentId() {
+    public Integer getPaymentId() {
         return paymentId;
     }
 
-    public void setPaymentId(int paymentId) {
+    public void setPaymentId(Integer paymentId) {
         this.paymentId = paymentId;
     }
 
-    public int getUid() {
+    public Integer getUid() {
         return uid;
     }
 
-    public void setUid(int uid) {
+    public void setUid(Integer uid) {
         this.uid = uid;
     }
 
-    public int getBookkeepingId() {
+    public Integer getBookkeepingId() {
         return bookkeepingId;
     }
 
-    public void setBookkeepingId(int bookkeepingId) {
+    public void setBookkeepingId(Integer bookkeepingId) {
         this.bookkeepingId = bookkeepingId;
     }
 

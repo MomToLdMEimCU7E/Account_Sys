@@ -1,35 +1,43 @@
 package com.demo.account.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.demo.account.Po.CreateBookPo;
 import com.demo.account.Po.InPo;
 import com.demo.account.Po.PayPo;
 import com.demo.account.Po.UpdateBookPo;
+import com.demo.account.Vo.DiscernVo;
 import com.demo.account.Vo.GetPaymentRankVo;
+import com.demo.account.Vo.ReturnVo;
 import com.demo.account.common.Result;
 import com.demo.account.entity.*;
 import com.demo.account.exception.BizException;
 import com.demo.account.exception.ResultBody;
 import com.demo.account.mapper.*;
 import com.demo.account.service.BookService;
-import com.demo.account.utils.DateUtils;
+import com.demo.account.utils.ChineseNumToArabicNumUtil;
+import com.demo.account.utils.IndexUtil;
+import com.hankcs.hanlp.restful.HanLPClient;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("/book")
 public class BookController {
     private BookService bookService;
+
+
     @Autowired
     public BookController(BookService bookService) {
         this.bookService = bookService;
@@ -323,6 +331,20 @@ public class BookController {
         return ResultBody.success("删除成功");
     }
 
+    @PutMapping("/updateIncome")
+    @ResponseBody
+    Result<?> updateIncome(@RequestBody Income income){
+        incomeMapper.updateById(income);
+        return Result.success();
+    }
+
+    @PutMapping("/updatePayment")
+    @ResponseBody
+    Result<?> updatePayment(@RequestBody Payment payment){
+        paymentMapper.updateById(payment);
+        return Result.success();
+    }
+
     @GetMapping("/getBookList")
     @ResponseBody
     Result<?> getBookList(@RequestParam Integer uid){
@@ -443,5 +465,341 @@ public class BookController {
 //            default:return Result.error("01", "查询失败");
 //        }
 
+    }
+
+    @PostMapping("/test")
+    @ResponseBody
+    Result<?> test(@RequestParam String str){
+        HanLPClient client = new HanLPClient("https://hanlp.hankcs.com/api", null); // Replace null with your auth
+
+        Map<String, List> map = new HashMap<>();
+        try {
+            map = client.parse(str);
+         
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        List<List<List>> list = new ArrayList<>();
+        List<List<String>> words = new ArrayList<>();
+
+        Iterator<Map.Entry<String,List>> iterator = map.entrySet().iterator();
+        while (iterator.hasNext()){
+            Map.Entry<String,List> entry = iterator.next();
+            if(entry.getKey().equals("tok/fine")){
+                words = entry.getValue();
+            }
+            if(entry.getKey().equals("ner/ontonotes")){
+                list = entry.getValue();
+                break;
+            }
+        }
+
+        List<List> amountList;
+        amountList = list.get(0);
+        String fundId = null;
+        String amount = null;
+        String date = null;
+        String year = null, month = null, day = null;
+        if (words.size() > 0){
+            for (int i = 0; i < words.get(0).size(); i++) {
+                fundId = bookService.discern(words.get(0).get(i));
+                if (!StringUtils.isEmpty(fundId)) break;
+            }
+        }
+
+
+        for (int i = 0; i < amountList.size(); i++) {
+            if(amountList.get(i).get(1).equals("MONEY")){
+
+                if (amountList.get(i).get(0).toString().endsWith("元") || amountList.get(i).get(0).toString().endsWith("块")){
+                    amount = amountList.get(i).get(0).toString().substring(0,amountList.get(i).get(0).toString().length() - 1);
+                }else if (amountList.get(i).get(0).toString().endsWith("块钱")){
+                    amount = amountList.get(i).get(0).toString().substring(0,amountList.get(i).get(0).toString().length() - 2);
+                }
+                if(!StringUtils.isEmpty(amount)){
+                    if (!StringUtils.isNumeric(amount)) {
+                        amount = String.valueOf(ChineseNumToArabicNumUtil.chineseNumToArabicNum(amount));
+                    }
+                }
+
+            }else if (amountList.get(i).get(1).equals("DATE")){
+                String dateString = amountList.get(i).get(0).toString();
+
+                if (dateString.endsWith("号") || dateString.endsWith("日")){
+                    dateString = dateString.substring(0,dateString.length() - 1);
+                    Integer yueIndex = dateString.lastIndexOf("月");
+                    Integer nianIndex = dateString.lastIndexOf("年");
+                    Calendar now = Calendar.getInstance();
+
+                    if (nianIndex == -1){
+                        year = String.valueOf(now.get(Calendar.YEAR));
+                        if (yueIndex == -1){//既没有年也没有月，例如 28号
+                            month = String.valueOf(now.get(Calendar.MONTH));
+                            day = dateString;
+                        } else { //没有年，有月，例如12月28号
+                            day = dateString.substring(yueIndex + 1);
+                            month = dateString.substring(0,yueIndex);
+                        }
+                    } else {//年月日齐全，2023年12月28号
+                        year = dateString.substring(0, nianIndex);
+                        month = dateString.substring(nianIndex + 1, yueIndex);
+                        day = dateString.substring(yueIndex + 1);
+                    }
+
+                }
+
+                if (!StringUtils.isNumeric(year)){
+                    year = String.valueOf(ChineseNumToArabicNumUtil.chineseNumToArabicNum(year));
+                }
+                if (!StringUtils.isNumeric(month)){
+                    month = String.valueOf(ChineseNumToArabicNumUtil.chineseNumToArabicNum(month));
+                }
+                if (!StringUtils.isNumeric(day)){
+                    day = String.valueOf(ChineseNumToArabicNumUtil.chineseNumToArabicNum(day));
+                }
+
+                date = year + "-" + month + "-" + day;
+            }
+        }
+
+        DiscernVo discernVo = new DiscernVo(date, amount,fundId, year, month, day);
+        return Result.success(discernVo);
+    }
+
+    @PostMapping("/train")
+    @ResponseBody
+    Result<?> train(MultipartFile file) throws Exception{
+        // 火车票识别
+        String url = "https://api.textin.com/robot/v1.0/api/train_ticket";
+        // 请登录后前往 “工作台-账号设置-开发者信息” 查看 x-ti-app-id
+        // 示例代码中 x-ti-app-id 非真实数据
+
+        String appId = "a284096f26dca94b3c0780c4d536c476";
+        // 请登录后前往 “工作台-账号设置-开发者信息” 查看 x-ti-secret-code
+        // 示例代码中 x-ti-secret-code 非真实数据
+        String secretCode = "c39a8795a75d92d437498dd64b62cf83";
+        BufferedReader in = null;
+        DataOutputStream out = null;
+        String result = "";
+
+        if (file.isEmpty()){
+            return Result.error("01", "fail");
+        }
+
+        String originFileName = file.getOriginalFilename();
+
+        String ext = originFileName.substring(originFileName.lastIndexOf("."));
+        String uuid = UUID.randomUUID().toString().replace("-","");
+        String fileName = uuid + ext;
+        ApplicationHome applicationHome = new ApplicationHome(this.getClass());
+        String pre = applicationHome.getDir().getParentFile().getParentFile().getAbsolutePath() +
+                "\\src\\main\\resources\\static\\images\\";
+        String path = pre + fileName;
+        try {
+            file.transferTo(new File(path));
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+
+        try {
+            byte[] imgData = readfile(path); // image
+            URL realUrl = new URL(url);
+            HttpURLConnection conn = (HttpURLConnection)realUrl.openConnection();
+            conn.setRequestProperty("connection", "Keep-Alive");
+            conn.setRequestProperty("Content-Type", "application/octet-stream");
+            conn.setRequestProperty("x-ti-app-id", appId);
+            conn.setRequestProperty("x-ti-secret-code", secretCode);
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestMethod("POST"); // 设置请求方式
+            out = new DataOutputStream(conn.getOutputStream());
+            out.write(imgData);
+            out.flush();
+            out.close();
+            in = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            String line;
+            while ((line = in.readLine()) != null) {
+                result += line;
+            }
+        } catch (Exception e) {
+            System.out.println("发送 POST 请求出现异常！" + e);
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        String res =    result.replaceAll("\"", "");
+        String price = null;
+        String date = null;
+        String year = null, month = null, day = null;
+
+        price = IndexUtil.getString(res, "price");
+        date = IndexUtil.getString(res, "乘车时间");
+
+        String dateString = date.substring(0, date.indexOf(" "));
+
+        String[] array = dateString.split("-");
+        year = array[0];
+        month = array[1];
+        day = array[2];
+
+
+        return Result.success(new DiscernVo(date, price, "BO4", year, month, day));
+//        res = " [\n" + res + "]";
+//        JSONArray jsonArray = JSONArray.parseArray(res);
+//        ReturnVo returnVo = jsonArray.getObject(0, ReturnVo.class);
+//
+//        System.out.println(res);
+//        return Result.success(res);
+
+//        ReturnVo returnVo = (ReturnVo) jsonArray.get(0);
+//
+//        String price = null;
+//        String date = null;
+//        String year = null, month = null, day = null;
+//        for (int i = 0; i < returnVo.getResultVo().getItemLists().size(); i++) {
+//            if (returnVo.getResultVo().getItemLists().get(i).getKey().equals("price")){
+//                price = returnVo.getResultVo().getItemLists().get(i).getValue();
+//            }
+//            if (returnVo.getResultVo().getItemLists().get(i).getKey().equals("departure_date")){
+//                date = returnVo.getResultVo().getItemLists().get(i).getValue();
+//            }
+//        }
+////        date = date.substring(0,10);
+//        String[] array = date.split("-");
+//        year = array[0];
+//        month = array[1];
+//        day = array[2];
+//
+//        DiscernVo discernVo = new DiscernVo(date, price, "BO4", year, month, day);
+//        return Result.success(discernVo);
+    }
+
+    @PostMapping("/receipt")
+    @ResponseBody
+    Result<?> receipt(MultipartFile file) throws Exception{
+        // 小票识别
+        String url = "https://api.textin.com/robot/v1.0/api/receipt";
+        // 请登录后前往 “工作台-账号设置-开发者信息” 查看 x-ti-app-id
+        // 示例代码中 x-ti-app-id 非真实数据
+
+        String appId = "a284096f26dca94b3c0780c4d536c476";
+        // 请登录后前往 “工作台-账号设置-开发者信息” 查看 x-ti-secret-code
+        // 示例代码中 x-ti-secret-code 非真实数据
+        String secretCode = "c39a8795a75d92d437498dd64b62cf83";
+        BufferedReader in = null;
+        DataOutputStream out = null;
+        String result = "";
+
+        if (file.isEmpty()){
+            return Result.error("01", "fail");
+        }
+
+        String originFileName = file.getOriginalFilename();
+
+        String ext = originFileName.substring(originFileName.lastIndexOf("."));
+        String uuid = UUID.randomUUID().toString().replace("-","");
+        String fileName = uuid + ext;
+        ApplicationHome applicationHome = new ApplicationHome(this.getClass());
+        String pre = applicationHome.getDir().getParentFile().getParentFile().getAbsolutePath() +
+                "\\src\\main\\resources\\static\\images\\";
+        String path = pre + fileName;
+        try {
+            file.transferTo(new File(path));
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+
+        try {
+            byte[] imgData = readfile(path); // image
+            URL realUrl = new URL(url);
+            HttpURLConnection conn = (HttpURLConnection)realUrl.openConnection();
+            conn.setRequestProperty("connection", "Keep-Alive");
+            conn.setRequestProperty("Content-Type", "application/octet-stream");
+            conn.setRequestProperty("x-ti-app-id", appId);
+            conn.setRequestProperty("x-ti-secret-code", secretCode);
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setRequestMethod("POST"); // 设置请求方式
+            out = new DataOutputStream(conn.getOutputStream());
+            out.write(imgData);
+            out.flush();
+            out.close();
+            in = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            String line;
+            while ((line = in.readLine()) != null) {
+                result += line;
+            }
+        } catch (Exception e) {
+            System.out.println("发送 POST 请求出现异常！" + e);
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        String res = result.replaceAll("\"", "");
+        String price = null;
+        String date = null;
+        String year = null, month = null, day = null;
+        price = IndexUtil.getString(res, "money");
+        date = IndexUtil.getString(res,"date");
+        Calendar now = Calendar.getInstance();
+        year = String.valueOf(now.get(Calendar.YEAR));
+
+        String dateString = date.substring(0,date.indexOf(" "));
+        String[] array = dateString.split("-");
+        month = array[0];
+        day = array[1];
+        return Result.success(new DiscernVo(date, price, "BO1", year, month, day));
+
+
+
+//        res = " [\n" + res + "]";
+//        JSONArray jsonArray = JSONArray.parseArray(res);
+//
+//
+//        return Result.success(jsonArray);
+    }
+
+    public static byte[] readfile(String path)
+    {
+        String imgFile = path;
+        InputStream in = null;
+        byte[] data = null;
+        try
+        {
+            in = new FileInputStream(imgFile);
+            data = new byte[in.available()];
+            in.read(data);
+            in.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return data;
     }
 }
