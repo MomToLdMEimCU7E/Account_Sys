@@ -210,7 +210,7 @@ public class BookController {
      * 功能：获取对于账本的支出明细
      */
     @RequestMapping(method = RequestMethod.GET,value = "/getPayment")
-    ResultBody selectBookkeepingPayment(int uid, String bookKeepingName){
+        ResultBody selectBookkeepingPayment(int uid, String bookKeepingName){
         return ResultBody.success(bookService.selectBookkeepingPayment(uid, bookKeepingName));
     }
 
@@ -438,7 +438,7 @@ public class BookController {
     @GetMapping("/getPaymentRank")
     @ResponseBody
     Result<?> getPaymentRank(@RequestParam Integer bookkeepingId, @RequestParam String year, @RequestParam String month){
-        String sql = "'" + year + "-" + month + "'";
+        String sql =year + "-" + month;
         List<GetPaymentRankVo> getPaymentRankVoList = bookMapper.getPaymentRank(sql,bookkeepingId);
 
         //getPaymentRankVoList.remove(getPaymentRankVoList.size() - 1);
