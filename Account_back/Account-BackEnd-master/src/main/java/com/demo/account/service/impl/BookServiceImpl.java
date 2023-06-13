@@ -782,7 +782,7 @@ public class BookServiceImpl implements BookService {
         List<PaymentVo> incomeVoList = new ArrayList<>();
         for (int i = 0; i < incomeList.size(); i++) {
             String fundName = bookMapper.getFundName(incomeList.get(i).getFundId());
-            String fundIcon = bookMapper.getFundIcon(paymentList.get(i).getFundId());
+            String fundIcon = bookMapper.getFundIcon(incomeList.get(i).getFundId());
             String accountName = accountDetailsTypeMapper.getTypeName(accountDetailsMapper.getDetailTypeId(incomeList.get(i).getAccountDetailId()));
             PaymentVo paymentVo = new PaymentVo(incomeList.get(i).getPaymentId(),incomeList.get(i).getUid(),incomeList.get(i).getBookkeepingId(),accountName,incomeList.get(i).getAccountDetailId(),incomeList.get(i).getAmount(),incomeList.get(i).getTime(),fundName,null,incomeList.get(i).getComment(),incomeList.get(i).getEnclosure(),fundIcon);
             incomeVoList.add(paymentVo);
@@ -797,7 +797,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Result<?> getMonthPayment(Integer bookkeepingId, String year, String month) {
-        String date = "'" + year + "-" + month + "%'";
+        String date = "" + year + "-" + month + "%";
 
         java.text.SimpleDateFormat formatter = new SimpleDateFormat( "yyyy-MM");
         Date date1 = null;
